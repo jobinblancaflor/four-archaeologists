@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Adventure of Four Archaeologists — Episode 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Patrick+Hand&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#2b2b2b;--paper:#fbf7ec;--bg:#2f2620}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'Patrick Hand',cursive}
+.wrap{max-width:1000px;margin:0 auto;padding:14px 12px 40px}
+h1{font-family:'Luckiest Guy',cursive;color:#f2c94c;font-size:clamp(22px,5vw,38px);margin:4px 0 2px;text-align:center;letter-spacing:1px;text-shadow:2px 2px 0 #000}
+.sub{color:#e9dcc7;text-align:center;margin:0 0 12px;font-size:18px}
+.stage{position:relative;width:100%;aspect-ratio:16/9;background:var(--paper);border-radius:12px;overflow:hidden;box-shadow:0 12px 34px rgba(0,0,0,.5)}
+.stage svg{width:100%;height:100%;display:block}
+.caption{background:var(--paper);border-radius:12px;margin-top:10px;padding:10px 14px;min-height:84px;border:3px solid var(--ink);font-size:clamp(17px,2.6vw,22px);line-height:1.3}
+.caption .who{font-family:'Luckiest Guy',cursive;font-size:.85em;letter-spacing:.5px;display:block;margin-bottom:2px}
+.controls{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.controls button{font-family:'Luckiest Guy',cursive;font-size:16px;background:#f2c94c;border:3px solid var(--ink);border-radius:10px;padding:7px 12px;cursor:pointer;color:var(--ink)}
+.controls button:active{transform:translateY(2px)}
+.bar{flex:1;min-width:120px;height:12px;background:#5a4a3c;border-radius:8px;overflow:hidden;border:2px solid #000}
+.bar i{display:block;height:100%;width:0;background:#e4574b}
+.eps{display:flex;gap:8px;justify-content:center;margin:0 0 10px}
+.eps button{font-family:'Luckiest Guy',cursive;font-size:17px;background:#4a3d33;color:#f3e9d8;border:3px solid #000;border-radius:10px;padding:6px 14px;cursor:pointer}
+.eps button.on{background:#f2c94c;color:#2b2b2b}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.chips button{font-family:'Patrick Hand',cursive;font-size:16px;background:#4a3d33;color:#f3e9d8;border:2px solid #6b5848;border-radius:20px;padding:3px 11px;cursor:pointer}
+.chips button.on{background:#f3e9d8;color:var(--ink);border-color:#f2c94c}
+.overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(43,43,43,.35)}
+.overlay button{font-family:'Luckiest Guy',cursive;font-size:clamp(22px,5vw,40px);background:#e4574b;color:#fff;border:4px solid var(--ink);border-radius:18px;padding:12px 28px;cursor:pointer;box-shadow:0 6px 0 var(--ink)}
+.overlay small{color:#fff;font-size:18px;text-shadow:1px 1px 0 #000}
+.hidden{display:none!important}
+section.bible{background:var(--paper);border-radius:12px;margin-top:22px;padding:16px 18px;font-size:19px;line-height:1.4}
+section.bible h2{font-family:'Luckiest Guy',cursive;margin:0 0 8px;font-size:24px}
+.cast{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:10px}
+.cast div{border:3px solid var(--ink);border-radius:12px;padding:8px 12px;background:#fff}
+.cast b{font-family:'Luckiest Guy',cursive;font-size:20px;font-weight:normal}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>The Adventure of Four Archaeologists</h1>
+  <p class="sub" id="epSub"></p>
+  <div class="eps" id="eps"></div>
+
+  <div class="stage">
+    <svg id="svg" viewBox="0 0 960 540" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#cfe8ff"/><stop offset="1" stop-color="#fdf8ea"/>
+        </linearGradient>
+        <radialGradient id="glowG"><stop offset="0" stop-color="#fff7b8"/><stop offset="1" stop-color="#fff7b8" stop-opacity="0"/></radialGradient>
+        <linearGradient id="sunsetG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffb46b"/><stop offset="1" stop-color="#ffe7bf"/></linearGradient>
+        <filter id="rough"><feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale="3.5"/></filter>
+      </defs>
+      <g id="world"><g id="bg" filter="url(#rough)"></g>
+      <g id="chars"></g>
+      <g id="fx"></g>
+      <g id="ui"></g></g>
+      <g id="spiral"></g>
+    </svg>
+    <div class="overlay" id="startOv">
+      <button id="startBtn">▶ WATCH</button>
+      <small>With voice-over & sound effects — turn up the volume!</small>
+    </div>
+    <div class="overlay hidden" id="endOv">
+      <button id="nextEpBtn">▶ WATCH EPISODE 2</button>
+      <button id="againBtn">↻ WATCH AGAIN</button>
+      <small id="endNote">See you in Episode 3!</small>
+    </div>
+  </div>
+
+  <div class="caption" id="cap"><span class="who" id="capWho">&nbsp;</span><span id="capTxt"></span></div>
+
+  <div class="controls">
+    <button id="restart" title="Restart">⏮</button>
+    <button id="play">⏸</button>
+    <button id="next" title="Next scene">⏭</button>
+    <div class="bar"><i id="barFill"></i></div>
+    <button id="mute">🔊</button>
+  </div>
+  <div class="chips" id="chips"></div>
+
+  <section class="bible">
+    <h2>The Characters</h2>
+    <div class="cast">
+      <div><b style="color:#d9483c">Johan</b><br>The Leader and Investigator. Carries a <i>magnifying glass</i> — always the first to spot a clue.</div>
+      <div><b style="color:#3f7fd6">Thor</b><br>The Cleaner and Sifter. Uses a <i>brush</i> and a <i>sieve</i> — gentle with every artifact.</div>
+      <div><b style="color:#3c9a58">Julius</b><br>The Digger. Two <i>shovels</i> — the strongest and fastest digger on the team.</div>
+      <div><b style="color:#b98a10">Asher</b><br>The Scientist. Petri dishes and a field lab — finds out how old every discovery is.</div>
+    </div>
+    <h2 style="margin-top:16px" id="synH"></h2>
+    <div id="syn"></div>
+  </section>
+</div>
+
+<script>
+(()=>{
+const NS='http://www.w3.org/2000/svg';
+const $=s=>document.querySelector(s);
+const INK='#2b2b2b', SKIN='#f7d9b8', JEANS='#6f8fc4', GY=470;
+const bgL=$('#bg'), charsL=$('#chars'), fxL=$('#fx'), uiL=$('#ui');
+
+/* ---------- helpers ---------- */
+const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+const lerp=(a,b,k)=>a+(b-a)*k;
+const ease=k=>k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+const elastic=k=>k<=0?0:k>=1?1:Math.pow(2,-10*k)*Math.sin((k*10-.75)*2*Math.PI/3)+1;
+const prog=(t,a,b)=>clamp((t-a)/(b-a));
+const rand=r=>Array.isArray(r)?r[0]+Math.random()*(r[1]-r[0]):r;
+
+/* ---------- sound ---------- */
+let AC=null, muted=false;
+function tone(f,d,type='square',vol=.08,slide=0,delay=0){
+  if(!AC||muted)return;
+  const t0=AC.currentTime+delay,o=AC.createOscillator(),g=AC.createGain();
+  o.type=type;o.frequency.setValueAtTime(f,t0);
+  if(slide)o.frequency.exponentialRampToValueAtTime(slide,t0+d);
+  g.gain.setValueAtTime(vol,t0);g.gain.exponentialRampToValueAtTime(.0001,t0+d);
+  o.connect(g).connect(AC.destination);o.start(t0);o.stop(t0+d+.02);
+}
+const SFX={
+  jingle(){[523,659,784,1047,784,1047].forEach((f,i)=>tone(f,.2,'triangle',.11,0,i*.12))},
+  pop(){tone(500,.1,'triangle',.09,950)},
+  thud(){tone(150,.16,'sine',.25,55)},
+  clang(){tone(880,.5,'square',.06,840);tone(1320,.4,'triangle',.07)},
+  sparkle(){[1568,2093,2637,3136].forEach((f,i)=>tone(f,.14,'sine',.06,0,i*.07))},
+  bubble(){tone(260+Math.random()*320,.09,'sine',.07,800)},
+  click(){tone(1400,.05,'square',.06);tone(900,.06,'square',.05,0,.06)},
+  creak(){tone(180,.7,'sawtooth',.035,90)},
+  wow(){tone(300,.5,'triangle',.08,700)},
+  brush(){tone(2000+Math.random()*900,.04,'sawtooth',.012)},
+  step(){tone(90,.05,'sine',.08)},
+  rumble(){tone(55,1.6,'sawtooth',.07,38);tone(72,1.3,'square',.03,44)}
+};
+
+/* ---------- voice-over (Kokoro TTS clips in vo/) ---------- */
+const VODUR={"s0_0": 7.13, "s1_0": 5.21, "s1_1": 5.06, "s1_2": 3.53, "s1_3": 5.45, "s2_0": 2.74, "s2_1": 2.52, "s2_2": 2.95, "s3_0": 1.9, "s3_1": 3.5, "s3_2": 2.78, "s3_3": 1.7, "s4_0": 3.34, "s4_1": 2.54, "s4_2": 4.2, "s4_3": 1.54, "s4_4": 1.73, "s5_0": 3.58, "s5_1": 4.2, "s5_2": 3.7, "s5_3": 0.72, "s6_0": 1.1, "s6_1": 0.91, "s6_2": 5.52, "s6_3": 3.24, "s6_4": 2.42, "s6_5": 4.56, "e2_s0_0": 6.7, "e2_s1_0": 4.61, "e2_s1_1": 3.6, "e2_s1_2": 1.99, "e2_s2_0": 2.86, "e2_s2_1": 1.87, "e2_s2_2": 2.69, "e2_s3_0": 2.88, "e2_s3_1": 2.42, "e2_s3_2": 3.48, "e2_s3_3": 1.73, "e2_s4_0": 1.99, "e2_s4_1": 4.7, "e2_s4_2": 2.62, "e2_s4_3": 3.55, "e2_s5_0": 2.54, "e2_s5_1": 2.69, "e2_s5_2": 1.94, "e2_s5_3": 4.73, "e2_s5_4": 2.83, "e2_s6_0": 1.7, "e2_s6_1": 1.22, "e2_s6_2": 4.08, "e2_s7_0": 2.74, "e2_s7_1": 1.92, "e2_s7_2": 1.73, "e2_s7_3": 4.78, "e3_s0_0": 7.54, "e3_s1_0": 3.65, "e3_s1_1": 3.24, "e3_s1_2": 2.66, "e3_s1_3": 2.59, "e3_s2_0": 2.81, "e3_s2_1": 2.33, "e3_s2_2": 2.21, "e3_s2_3": 2.81, "e3_s2_4": 2.18, "e3_s3_0": 2.76, "e3_s3_1": 3.72, "e3_s3_2": 2.3, "e3_s3_3": 1.42, "e3_s4_0": 3.41, "e3_s4_1": 1.44, "e3_s4_2": 4.73, "e3_s4_3": 4.58, "e3_s4_4": 4.32, "e3_s4_5": 2.04, "e3_s5_0": 2.57, "e3_s5_1": 3.77, "e3_s5_2": 4.34, "e3_s5_3": 3.41, "e3_s5_4": 2.98, "e3_s6_0": 4.63, "e3_s6_1": 2.02, "e3_s6_2": 2.95, "e3_s6_3": 4.13, "e4_s0_0": 7.51, "e4_s1_0": 3.5, "e4_s1_1": 2.4, "e4_s1_2": 3.86, "e4_s1_3": 2.38, "e4_s2_0": 3.05, "e4_s2_1": 3.77, "e4_s2_2": 2.83, "e4_s2_3": 1.97, "e4_s3_0": 1.51, "e4_s3_1": 5.06, "e4_s3_2": 3.31, "e4_s4_0": 1.87, "e4_s4_1": 3.62, "e4_s4_2": 4.37, "e4_s4_3": 3.89, "e4_s5_0": 3.38, "e4_s5_1": 1.94, "e4_s5_2": 2.86, "e4_s5_3": 3.19, "e4_s5_4": 3.36, "e4_s6_0": 3.94, "e4_s6_1": 3.22, "e4_s6_2": 1.34, "e4_s6_3": 4.44};
+const VO={bufs:{},line:null,src:null,busy:false,t0:0,wasLine:null,loading:false,
+  loadAll(){if(this.loading||!AC)return;this.loading=true;
+    EPISODES.forEach(ep=>ep.scenes.forEach(sc=>sc.lines.forEach(l=>{fetch(l.vo).then(r=>{if(!r.ok)throw 0;return r.arrayBuffer()})
+      .then(b=>new Promise((res,rej)=>AC.decodeAudioData(b,res,rej))).then(buf=>{this.bufs[l.vo]=buf}).catch(()=>{})})))},
+  say(l){this.stop();if(muted||!AC)return;this.line=l;this.busy=true;this.t0=performance.now();this.tryPlay()},
+  tryPlay(){const l=this.line;if(!l||this.src)return;const b=this.bufs[l.vo];if(!b)return;
+    const s=AC.createBufferSource();s.buffer=b;const g=AC.createGain();g.gain.value=1.1;s.connect(g).connect(AC.destination);
+    if(l.echo){const d=AC.createDelay(2);d.delayTime.value=.42;const fb=AC.createGain();fb.gain.value=.45;const w=AC.createGain();w.gain.value=.55;g.connect(w).connect(d);d.connect(fb).connect(d);d.connect(AC.destination)}
+    s.onended=()=>{if(this.src!==s)return;if(l.echo)setTimeout(()=>{if(this.src===s){this.src=null;this.busy=false}},1600);else{this.src=null;this.busy=false}};this.src=s;s.start()},
+  stop(){if(this.src){const s=this.src;this.src=null;try{s.stop()}catch(e){}}this.busy=false},
+  holding(){if(!this.busy)return false;if(!this.src){this.tryPlay();if(!this.src&&performance.now()-this.t0>6000){this.busy=false;return false}}return this.busy},
+  unlock(){}
+};
+
+/* ---------- drawing pieces ---------- */
+function emblem(fill){
+  return `<path d="M-15,8 L-15,-12 L-8,-3 L8,-3 L15,-12 L15,8 Q0,22 -15,8Z" fill="${fill}" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/>
+  <circle cx="-6" cy="2" r="2.3" fill="${INK}"/><circle cx="6" cy="2" r="2.3" fill="${INK}"/>
+  <path d="M-5,9 Q0,13 5,9" fill="none" stroke="${INK}" stroke-width="2"/>`;
+}
+function cloud(x,y,w,h){
+  return `<path d="M${x},${y+h} C${x-14},${y+h*.35} ${x+w*.18},${y+h*.05} ${x+w*.3},${y+h*.3} C${x+w*.38},${y-h*.25} ${x+w*.68},${y-h*.2} ${x+w*.72},${y+h*.25} C${x+w*.9},${y+h*.05} ${x+w+16},${y+h*.55} ${x+w},${y+h} Z" fill="#fff" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>`;
+}
+function tool(kind,d,hx,hy){
+  switch(kind){
+    case 'magnifier': return `<line x1="${hx}" y1="${hy}" x2="${hx+d*10}" y2="${hy-30}" stroke="#7a4b23" stroke-width="7" stroke-linecap="round"/>
+      <circle cx="${hx+d*16}" cy="${hy-48}" r="19" fill="#bfe6ff" fill-opacity=".75" stroke="${INK}" stroke-width="5"/>
+      <path d="M${hx+d*8},${hy-56} q${d*6},-6 ${d*12},-4" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+    case 'brush': return `<line x1="${hx}" y1="${hy+16}" x2="${hx}" y2="${hy-58}" stroke="#b07a3c" stroke-width="7" stroke-linecap="round"/>
+      <rect x="${hx-6}" y="${hy-66}" width="12" height="10" fill="#9aa3ad" stroke="${INK}" stroke-width="2"/>
+      <path d="M${hx-7},${hy-66} Q${hx},${hy-96} ${hx+7},${hy-66}Z" fill="#262626" stroke="${INK}" stroke-width="2"/>`;
+    case 'sieve': { const x=d>0?hx+2:hx-58;
+      return `<line x1="${hx}" y1="${hy}" x2="${x+28}" y2="${hy+2}" stroke="${INK}" stroke-width="2"/>
+      <rect x="${x}" y="${hy}" width="56" height="34" rx="4" fill="#e9cf9b" stroke="${INK}" stroke-width="3"/>
+      <path d="M${x+8},${hy+4}v26M${x+18},${hy+4}v26M${x+28},${hy+4}v26M${x+38},${hy+4}v26M${x+48},${hy+4}v26M${x+4},${hy+14}h48M${x+4},${hy+24}h48" stroke="#8a6a3a" stroke-width="1.5"/>
+      <path d="M${x},${hy} l7,-7 l7,7 l7,-7 l7,7 l7,-7 l7,7 l7,-7 l7,7" fill="none" stroke="${INK}" stroke-width="2.5"/>`;}
+    case 'shovel': { const ex=hx+d*20, ey=hy+80;
+      return `<line x1="${hx-d*2}" y1="${hy-14}" x2="${ex}" y2="${ey}" stroke="#7a4b23" stroke-width="7" stroke-linecap="round"/>
+      <line x1="${hx-d*9}" y1="${hy-16}" x2="${hx+d*5}" y2="${hy-12}" stroke="${INK}" stroke-width="5" stroke-linecap="round"/>
+      <path d="M${ex-13},${ey} L${ex+13},${ey} L${ex+11},${ey+16} L${ex},${ey+30} L${ex-11},${ey+16}Z" fill="#a9b2bc" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>`;}
+    case 'dish': return `<circle cx="${hx+d*8}" cy="${hy+2}" r="17" fill="#3a3a3a" stroke="${INK}" stroke-width="3"/>
+      <circle cx="${hx+d*8}" cy="${hy+2}" r="10" fill="#8fd3c7" stroke="#222" stroke-width="2"/>`;
+  }
+  return '';
+}
+function arm(side,c){
+  const d=side==='L'?-1:1, sx=d*32, sy=-194, hx=d*60, hy=-116;
+  const sleeve=c.coat?'#fdfdfd':c.shirt;
+  return `<g class="arm${side}"><line x1="${sx}" y1="${sy}" x2="${hx}" y2="${hy}" stroke="${INK}" stroke-width="17" stroke-linecap="round"/>
+   <line x1="${sx}" y1="${sy}" x2="${hx}" y2="${hy}" stroke="${sleeve}" stroke-width="11" stroke-linecap="round"/>
+   ${tool(c['tool'+side],d,hx,hy)}
+   <circle cx="${hx}" cy="${hy}" r="9.5" fill="${SKIN}" stroke="${INK}" stroke-width="3"/></g>`;
+}
+function charSVG(c){
+  const S3=`stroke="${INK}" stroke-width="3"`;
+  const legs=`<g class="legL"><rect x="-25" y="-96" width="19" height="88" rx="4" fill="${JEANS}" ${S3}/>
+     <rect x="-22" y="-58" width="10" height="11" fill="#8fabda" stroke="${INK}" stroke-width="2"/>
+     <path d="M-33,-1 Q-33,-17 -16,-17 Q-2,-17 -2,-1Z" fill="#fff" ${S3}/></g>
+   <g class="legR"><rect x="6" y="-96" width="19" height="88" rx="4" fill="${JEANS}" ${S3}/>
+     <rect x="11" y="-38" width="10" height="11" fill="#8fabda" stroke="${INK}" stroke-width="2"/>
+     <path d="M2,-1 Q2,-17 18,-17 Q33,-17 33,-1Z" fill="#fff" ${S3}/></g>`;
+  const torso=`<rect x="-34" y="-206" width="68" height="114" rx="8" fill="${c.shirt}" ${S3}/>
+   <rect x="-34" y="-104" width="68" height="12" fill="${JEANS}" ${S3}/><circle cx="0" cy="-98" r="4" fill="#f2c94c" stroke="${INK}" stroke-width="2"/>
+   <g transform="translate(0,-178) scale(.9)">${emblem('#fff')}</g>
+   <ellipse cx="0" cy="-138" rx="12" ry="20" fill="#fff" ${S3}/><path d="M-6,-136 Q0,-129 6,-136" fill="none" stroke="${INK}" stroke-width="2"/>
+   ${c.coat?`<path d="M-34,-204 L-60,-64 L-13,-64 L-11,-204Z" fill="#fdfdfd" ${S3}/><path d="M34,-204 L60,-64 L13,-64 L11,-204Z" fill="#fdfdfd" ${S3}/>`:''}`;
+  const eyes=c.eyes==='glasses'
+   ?`<circle cx="-17" cy="-257" r="12.5" fill="#fff" ${S3}/><circle cx="17" cy="-257" r="12.5" fill="#fff" ${S3}/>
+     <line x1="-4.5" y1="-257" x2="4.5" y2="-257" ${S3}/><line x1="-29" y1="-259" x2="-44" y2="-263" ${S3}/><line x1="29" y1="-259" x2="44" y2="-263" ${S3}/>
+     <circle cx="-15" cy="-256" r="4.8" fill="${INK}"/><circle cx="19" cy="-256" r="4.8" fill="${INK}"/>`
+   :`<ellipse cx="-16" cy="-258" rx="10" ry="14" fill="#fff" ${S3}/><ellipse cx="16" cy="-258" rx="10" ry="14" fill="#fff" ${S3}/>
+     <ellipse cx="-15" cy="-256" rx="6.5" ry="9.5" fill="${INK}"/><ellipse cx="17" cy="-256" rx="6.5" ry="9.5" fill="${INK}"/>
+     <circle cx="-13" cy="-260" r="2.6" fill="#fff"/><circle cx="19" cy="-260" r="2.6" fill="#fff"/>`;
+  const mouth=c.mouth==='teeth'
+   ?`<rect x="-22" y="-237" width="44" height="22" rx="7" fill="#fff" ${S3}/><line x1="-21" y1="-230" x2="21" y2="-230" stroke="${INK}" stroke-width="2"/><line x1="-21" y1="-223" x2="21" y2="-223" stroke="${INK}" stroke-width="2"/>`
+   :`<path d="M-19,-233 Q0,-212 19,-233" fill="#c0504d" fill-opacity=".25" stroke="${INK}" stroke-width="3.5" stroke-linecap="round"/>`;
+  return `<g class="body">${legs}${torso}
+    <g class="head"><circle cx="0" cy="-250" r="45" fill="${SKIN}" ${S3}/>
+     <path d="M-45,-258 C-49,-308 49,-308 45,-258 C38,-273 26,-277 18,-267 C10,-281 -8,-281 -14,-269 C-22,-279 -38,-275 -45,-258Z" fill="#262626" stroke="${INK}" stroke-width="2"/>
+     <path d="M-30,-290 l10,6 M-6,-298 l8,8 M18,-294 l6,8" stroke="#555" stroke-width="2"/>
+     <circle cx="-32" cy="-232" r="7" fill="#f2a5a0" opacity=".55"/><circle cx="32" cy="-232" r="7" fill="#f2a5a0" opacity=".55"/>
+     <g class="eyes">${eyes}</g><g class="mouth">${mouth}</g></g>
+    ${arm('L',c)}${arm('R',c)}</g>`;
+}
+
+/* ---------- cast ---------- */
+const CAST={
+  johan:{name:'Johan',shirt:'#e4574b',color:'#d9483c',eyes:'glasses',mouth:'teeth',toolL:'magnifier',toolR:''},
+  jothon:{name:'Thor',shirt:'#5b95e8',color:'#3f7fd6',eyes:'big',mouth:'teeth',toolL:'brush',toolR:'sieve'},
+  julius:{name:'Julius',shirt:'#5cbb78',color:'#3c9a58',eyes:'big',mouth:'teeth',toolL:'shovel',toolR:'shovel'},
+  asher:{name:'Asher',shirt:'#f2c94c',color:'#b98a10',eyes:'glasses',mouth:'smile',toolL:'dish',toolR:'dish',coat:true}
+};
+const ORDER=['johan','jothon','julius','asher'];
+const CH={};
+ORDER.forEach((id,i)=>{
+  const g=document.createElementNS(NS,'g'); g.innerHTML=charSVG(CAST[id]); charsL.appendChild(g);
+  CH[id]={el:g,i,body:g.querySelector('.body'),armL:g.querySelector('.armL'),armR:g.querySelector('.armR'),
+    legL:g.querySelector('.legL'),legR:g.querySelector('.legR'),mouth:g.querySelector('.mouth'),eyes:g.querySelector('.eyes')};
+});
+function reset(){ORDER.forEach(id=>Object.assign(CH[id],{vis:false,x:0,y:0,s:.95,flip:false,bob:Math.sin(T*2.2+CH[id].i*1.7)*1.6,aL:0,aR:0,leg:0,talk:false}))}
+function show(...ids){ids.forEach(id=>CH[id].vis=true)}
+function applyChars(){
+  ORDER.forEach(id=>{const c=CH[id];
+    c.el.style.display=c.vis?'':'none'; if(!c.vis)return;
+    c.el.setAttribute('transform',`translate(${c.x.toFixed(1)},${GY+c.y}) scale(${c.flip?-c.s:c.s},${c.s})`);
+    c.body.setAttribute('transform',`translate(0,${c.bob.toFixed(1)})`);
+    c.armL.setAttribute('transform',`rotate(${c.aL.toFixed(1)},-32,-194)`);
+    c.armR.setAttribute('transform',`rotate(${c.aR.toFixed(1)},32,-194)`);
+    c.legL.setAttribute('transform',`rotate(${c.leg.toFixed(1)},-15,-96)`);
+    c.legR.setAttribute('transform',`rotate(${(-c.leg).toFixed(1)},15,-96)`);
+    const m=c.talk?1-.55*Math.abs(Math.sin(T*17)):1;
+    c.mouth.setAttribute('transform',`translate(0,-226) scale(1,${m.toFixed(2)}) translate(0,226)`);
+    const b=((T+c.i*1.31)%3.9)<.13?.1:1;
+    c.eyes.setAttribute('transform',`translate(0,-257) scale(1,${b}) translate(0,257)`);
+  });
+}
+function walkTo(c,x0,x1,t,t0,t1){
+  const k=prog(t,t0,t1); c.x=lerp(x0,x1,k<1?k:1);
+  if(k>0&&k<1){c.leg=Math.sin(t*12)*24;c.bob=-Math.abs(Math.sin(t*12))*6;c.flip=x1>x0;c.aL=Math.sin(t*12)*12;c.aR=Math.sin(t*12)*12;}
+}
+function jump(c,t,t0,h=30,d=.5){const k=(t-t0)/d;if(k>0&&k<1)c.bob-=Math.sin(Math.PI*k)*h;}
+
+/* ---------- particles ---------- */
+let parts=[];
+function spawn(x,y,o={}){
+  const n=o.n||1;
+  for(let i=0;i<n;i++){
+    const el=document.createElementNS(NS,'circle');
+    el.setAttribute('r',rand(o.r||[3,6]).toFixed(1));el.setAttribute('fill',o.color||'#a0784a');
+    if(o.stroke){el.setAttribute('stroke',o.stroke);el.setAttribute('stroke-width','1.5');el.setAttribute('fill-opacity',o.fo??1)}
+    fxL.appendChild(el);
+    const life=rand(o.life||[.7,1.1]);
+    parts.push({el,x:x+rand(o.dx||0),y,vx:rand(o.vx||[-40,40]),vy:rand(o.vy||[-200,-100]),g:o.g??600,life,max:life});
+  }
+}
+function emit(dt,rate,x,y,o){if(dt>0&&Math.random()<dt*rate)spawn(x,y,o)}
+function stepParts(dt){
+  for(let i=parts.length-1;i>=0;i--){const p=parts[i];p.life-=dt;
+    if(p.life<=0){p.el.remove();parts.splice(i,1);continue}
+    p.vy+=p.g*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;
+    p.el.setAttribute('cx',p.x.toFixed(1));p.el.setAttribute('cy',p.y.toFixed(1));
+    p.el.setAttribute('opacity',Math.min(1,p.life/p.max*2).toFixed(2));}
+}
+function clearParts(){parts.forEach(p=>p.el.remove());parts=[]}
+
+/* ---------- backgrounds ---------- */
+function sky(g='skyG',sunC='#ffd95a'){
+  let rays='';[150,165,180,195,210,225,240].forEach(a=>{const r=a*Math.PI/180;
+    rays+=`<line x1="${930+Math.cos(r)*110}" y1="${40-Math.sin(r)*-1*0+Math.sin(r)*110}" x2="${930+Math.cos(r)*142}" y2="${40+Math.sin(r)*142}" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>`});
+  return `<rect width="960" height="540" fill="#fbf7ec"/><rect width="960" height="${GY}" fill="url(#${g})"/>
+   <g id="sun"><circle cx="930" cy="40" r="96" fill="${sunC}" stroke="${INK}" stroke-width="3"/>${rays}</g>
+   <g id="clouds">${cloud(50,38,165,82)}${cloud(300,62,140,70)}${cloud(500,26,230,92)}</g>`;
+}
+const mountains=()=>`<path d="M0,${GY} L110,352 L210,430 L330,322 L470,${GY}Z" fill="#dccfb6" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M300,345 L330,322 L356,348 L340,340 L328,352 L314,342Z" fill="#fff" stroke="${INK}" stroke-width="2"/>`;
+const ground=()=>`<path d="M0,${GY} Q120,${GY-7} 240,${GY} T480,${GY} T720,${GY} T960,${GY} L960,540 L0,540Z" fill="#f1dca8" stroke="${INK}" stroke-width="3"/>
+  <path d="M60,500 l12,0 M200,515 l18,0 M420,505 l10,0 M640,520 l16,0 M820,498 l12,0" stroke="#b99b62" stroke-width="3" stroke-linecap="round"/>`;
+const stoneBox=()=>`<rect x="-46" y="-36" width="92" height="38" rx="4" fill="#9a8c78" stroke="${INK}" stroke-width="3"/>
+   <g transform="translate(0,-16) scale(.8)">${emblem('#e7d39a')}</g>`;
+const lidSVG=()=>`<rect x="-50" y="-46" width="100" height="12" rx="3" fill="#ad9f8a" stroke="${INK}" stroke-width="3"/>`;
+const BG={
+  title:()=>sky()+ground(),
+  camp:()=>sky()+mountains()+ground()+
+   `<g><path d="M790,${GY} L868,322 L946,${GY}Z" fill="#f0a64b" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
+     <path d="M845,${GY} L868,392 L891,${GY}Z" fill="#7b4a1e" stroke="${INK}" stroke-width="3"/><line x1="868" y1="322" x2="868" y2="300" stroke="${INK}" stroke-width="3"/>
+     <path d="M868,300 l26,8 l-26,8Z" fill="#e4574b" stroke="${INK}" stroke-width="2"/></g>
+    <g transform="translate(92,${GY})"><line x1="-30" y1="-2" x2="30" y2="-14" stroke="#7a4b23" stroke-width="9" stroke-linecap="round"/><line x1="-30" y1="-14" x2="30" y2="-2" stroke="#7a4b23" stroke-width="9" stroke-linecap="round"/>
+     <g id="flames"><path d="M-22,-12 Q-26,-50 -4,-72 Q-6,-48 8,-44 Q4,-62 16,-78 Q30,-46 22,-12Z" fill="#f28b2c" stroke="${INK}" stroke-width="2.5"/>
+     <path d="M-10,-12 Q-12,-34 0,-46 Q4,-32 12,-30 Q14,-22 10,-12Z" fill="#ffd95a"/></g></g>`,
+  dig:()=>sky()+mountains()+ground()+
+   `<g><path d="M640,${GY+2} Q622,400 680,382 Q745,365 770,405 Q792,450 778,${GY+2}Z" fill="#bdb5a8" stroke="${INK}" stroke-width="3"/>
+     <path d="M668,404 l12,8 M748,446 l12,-6 M690,455 l8,4" stroke="${INK}" stroke-width="2.5"/>
+     <circle id="rockGlow" cx="708" cy="428" r="44" fill="url(#glowG)" opacity="0"/>
+     <g id="rockEm" opacity="0" transform="translate(708,428) scale(1.35)">${emblem('#fff3b0')}</g></g>
+    <ellipse id="hole" cx="560" cy="477" rx="0" ry="0" fill="#5b4330" stroke="${INK}" stroke-width="3"/>
+    <g id="box" opacity="0" transform="translate(560,476)">${stoneBox()}</g>
+    <ellipse id="dirt" cx="560" cy="463" rx="56" ry="24" fill="#c8a56e" stroke="#8a6a3a" stroke-width="2" opacity="0"/>`,
+  lab:()=>sky()+ground()+
+   `<g><rect x="600" y="370" width="320" height="16" rx="3" fill="#c89a62" stroke="${INK}" stroke-width="3"/>
+     <rect x="612" y="386" width="296" height="${GY-386}" fill="#e8d8bd" stroke="${INK}" stroke-width="3"/>
+     <line x1="760" y1="386" x2="760" y2="${GY}" stroke="${INK}" stroke-width="2"/>
+     <g transform="translate(650,370) scale(.7)">${stoneBox()}${lidSVG()}</g>
+     <g id="jars">
+      <rect x="712" y="282" width="40" height="88" rx="18" fill="#fff" stroke="${INK}" stroke-width="3"/><rect class="liq" x="717" y="320" width="30" height="46" rx="12" fill="#7ad0f0"/><rect x="722" y="270" width="20" height="14" fill="#fff" stroke="${INK}" stroke-width="3"/>
+      <rect x="772" y="300" width="38" height="70" rx="6" fill="#fff" stroke="${INK}" stroke-width="3"/><rect class="liq" x="777" y="330" width="28" height="36" rx="4" fill="#f28bc0"/><path d="M810,312 q14,6 0,24" fill="none" stroke="${INK}" stroke-width="3"/><rect x="780" y="288" width="22" height="14" fill="#fff" stroke="${INK}" stroke-width="3"/>
+      <rect x="830" y="266" width="42" height="104" rx="18" fill="#fff" stroke="${INK}" stroke-width="3"/><rect class="liq" x="835" y="304" width="32" height="62" rx="12" fill="#9be07a"/><line x1="840" y1="290" x2="862" y2="290" stroke="${INK}" stroke-width="2"/>
+      <rect x="884" y="318" width="24" height="52" rx="8" fill="#fff" stroke="${INK}" stroke-width="3"/><rect class="liq" x="888" y="338" width="16" height="28" rx="5" fill="#ffd95a"/><rect x="889" y="306" width="14" height="13" fill="#555" stroke="${INK}" stroke-width="2"/>
+     </g></g>`,
+  open:()=>sky()+mountains()+ground()+
+   `<g id="rays" opacity="0" transform="translate(480,410)">${Array.from({length:12},(_,i)=>`<path d="M0,0 L-14,-250 L14,-250Z" fill="#ffe680" transform="rotate(${i*30})"/>`).join('')}</g>
+    <circle id="bigGlow" cx="480" cy="410" r="120" fill="url(#glowG)" opacity="0"/>
+    <g transform="translate(480,${GY+2}) scale(1.6)">${stoneBox()}<circle cx="0" cy="-6" r="3.5" fill="${INK}"/><g id="lid">${lidSVG()}</g></g>`
+};
+
+const tree=(x,s=1)=>`<g transform="translate(${x},${GY}) scale(${s})"><rect x="-8" y="-72" width="16" height="74" fill="#8a5a2b" stroke="${INK}" stroke-width="3"/>
+  <circle cx="-24" cy="-80" r="22" fill="#6cc070" stroke="${INK}" stroke-width="3"/><circle cx="24" cy="-80" r="22" fill="#6cc070" stroke="${INK}" stroke-width="3"/><circle cx="0" cy="-100" r="36" fill="#6cc070" stroke="${INK}" stroke-width="3"/></g>`;
+const cloudMountain=()=>`<path d="M470,${GY} L740,140 L1010,${GY}Z" fill="#cbbfa9" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M690,205 L740,140 L792,205 L772,195 L752,214 L730,197 L710,214Z" fill="#fff" stroke="${INK}" stroke-width="2.5"/>
+  <g id="mcloud">${cloud(615,182,250,56)}</g>`;
+const caveWall=(paint)=>`<rect width="960" height="540" fill="#6b5a4a"/>
+  <path d="M0,0 L960,0 L960,40 L900,40 L880,95 L860,40 L700,40 L684,80 L668,40 L420,40 L400,110 L380,40 L180,40 L164,85 L148,40 L0,40Z" fill="#54463a" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M60,160 q30,-20 60,0 M800,140 q40,-25 80,0 M140,330 q25,-15 50,0 M760,300 q30,-18 60,0" stroke="#4b3e33" stroke-width="4" fill="none"/>
+  ${paint?`<g stroke="#e08a3c" stroke-width="5" fill="none" stroke-linecap="round" opacity=".95">
+   ${[300,400,500,600].map((x,i)=>`<circle cx="${x}" cy="168" r="15"/><line x1="${x}" y1="183" x2="${x}" y2="232"/><path d="M${x-14},262 L${x},232 L${x+14},262"/><path d="M${x-20},210 L${x},196 L${x+20},210"/>`).join('')}
+   <circle cx="282" cy="200" r="9"/><line x1="388" y1="190" x2="378" y2="222"/><path d="M518,200 l6,34 l-8,8"/><circle cx="622" cy="210" r="8"/>
+   <circle cx="190" cy="120" r="24"/><path d="M200,160 l20,8 M168,152 l-12,14 M222,128 l18,-4"/>
+   <path d="M690,128 c-12,-26 26,-30 30,-10 c18,-20 40,0 30,14 Z"/></g>`:''}
+  <path d="M0,${GY} Q240,${GY-6} 480,${GY} T960,${GY} L960,540 L0,540Z" fill="#8a7458" stroke="${INK}" stroke-width="3"/>`;
+const slotIcon=[
+  `<circle cx="-3" cy="-3" r="8" fill="none" stroke="${INK}" stroke-width="3"/><line x1="3" y1="3" x2="10" y2="10" stroke="${INK}" stroke-width="3.5" stroke-linecap="round"/>`,
+  `<line x1="0" y1="12" x2="0" y2="-4" stroke="${INK}" stroke-width="3.5"/><path d="M-5,-4 Q0,-18 5,-4Z" fill="${INK}"/>`,
+  `<line x1="0" y1="-14" x2="0" y2="2" stroke="${INK}" stroke-width="3.5"/><path d="M-7,2 L7,2 L5,9 L0,14 L-5,9Z" fill="${INK}"/>`,
+  `<circle r="11" fill="none" stroke="${INK}" stroke-width="3"/><circle r="5" fill="${INK}"/>`];
+const torch=(x,y,k)=>`<g transform="translate(${x},${y})"><rect x="-5" y="0" width="10" height="34" fill="#7a4b23" stroke="${INK}" stroke-width="2.5"/>
+  <g id="tf${k}"><path d="M-12,2 Q-14,-26 0,-42 Q4,-24 12,-22 Q14,-10 12,2Z" fill="#f28b2c" stroke="${INK}" stroke-width="2"/><path d="M-6,2 Q-6,-14 0,-22 Q6,-10 6,2Z" fill="#ffd95a"/></g>
+  <circle cy="-14" r="40" fill="url(#glowG)" opacity=".6"/></g>`;
+Object.assign(BG,{
+  trail:()=>sky()+cloudMountain()+ground()+tree(60)+tree(185,.8)+tree(930,.9)+
+    `<path d="M0,500 Q300,488 480,500 T960,494" fill="none" stroke="#c9a874" stroke-width="10" stroke-dasharray="20 14" stroke-linecap="round"/>`,
+  sunset:()=>sky('sunsetG','#ff9a3c')+cloudMountain()+ground()+tree(60)+tree(880,.9),
+  river:()=>sky()+cloudMountain()+ground()+tree(70,.8)+
+    `<path d="M400,${GY} Q510,${GY+8} 620,${GY} L660,540 L360,540Z" fill="#6cc3ea" stroke="${INK}" stroke-width="3"/>
+     <g id="waves" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round">
+      <path d="M410,492 q12,-6 24,0 t24,0"/><path d="M500,512 q12,-6 24,0 t24,0"/><path d="M440,530 q12,-6 24,0 t24,0"/><path d="M560,488 q12,-6 24,0 t24,0"/><path d="M590,524 q12,-6 24,0 t24,0"/></g>
+     <line x1="398" y1="${GY}" x2="398" y2="${GY-60}" stroke="#7a4b23" stroke-width="8"/><line x1="624" y1="${GY}" x2="624" y2="${GY-60}" stroke="#7a4b23" stroke-width="8"/>
+     <path d="M398,${GY-50} q14,30 6,62 M624,${GY-50} q-14,30 -6,62" stroke="#c8a56e" stroke-width="4" fill="none"/>
+     <g id="log"><rect x="348" y="${GY-286}" width="24" height="288" rx="6" fill="#8a5a2b" stroke="${INK}" stroke-width="3"/>
+      <path d="M356,${GY-240} l6,10 M364,${GY-150} l-6,12 M356,${GY-70} l6,8" stroke="${INK}" stroke-width="2"/>
+      <circle cx="334" cy="${GY-292}" r="26" fill="#6cc070" stroke="${INK}" stroke-width="3"/><circle cx="386" cy="${GY-292}" r="26" fill="#6cc070" stroke="${INK}" stroke-width="3"/><circle cx="360" cy="${GY-316}" r="34" fill="#6cc070" stroke="${INK}" stroke-width="3"/></g>`,
+  cave:()=>caveWall(true),
+  chamber:()=>caveWall(false)+torch(70,170,0)+torch(890,170,1)+
+    `<defs><clipPath id="doorClip"><rect x="350" y="170" width="260" height="300"/></clipPath></defs>
+     <path d="M330,${GY} L330,160 Q480,110 630,160 L630,${GY}Z" fill="#5a4b3e" stroke="${INK}" stroke-width="4"/>
+     <rect id="doorLight" x="350" y="170" width="260" height="300" fill="#ffe9a0" opacity=".4"/>
+     <g clip-path="url(#doorClip)"><g id="door"><rect x="350" y="170" width="260" height="300" fill="#9a8c78" stroke="${INK}" stroke-width="4"/>
+      <path d="M480,170 L480,470 M350,260 L610,260 M350,400 L610,400" stroke="#7d705e" stroke-width="3"/>
+      <g transform="translate(480,215) scale(1.6)">${emblem('#e7d39a')}</g>
+      ${[395,452,509,566].map((x,i)=>`<circle cx="${x}" cy="332" r="25" fill="#7d705e" stroke="${INK}" stroke-width="3"/><circle id="slot${i}" cx="${x}" cy="332" r="25" fill="#ffe680" opacity="0"/><g transform="translate(${x},332)">${slotIcon[i]}</g>`).join('')}
+     </g></g>`,
+  hall:()=>`<defs><linearGradient id="beamG" x1="0" x2="1"><stop offset="0" stop-color="#fff3a0" stop-opacity="0"/><stop offset=".5" stop-color="#fffbe0"/><stop offset="1" stop-color="#fff3a0" stop-opacity="0"/></linearGradient></defs>`+
+    caveWall(false)+torch(70,170,0)+torch(890,170,1)+
+    `<g id="mural"><rect x="220" y="62" width="520" height="168" rx="8" fill="#8d7a62" stroke="${INK}" stroke-width="4"/>
+      <g stroke="#f2c94c" stroke-width="5" fill="none" stroke-linecap="round">
+      ${[300,420,540,660].map(x=>`<circle cx="${x}" cy="108" r="15"/><line x1="${x}" y1="123" x2="${x}" y2="170"/><path d="M${x-13},205 L${x},170 L${x+13},205"/><path d="M${x-22},150 L${x},136 L${x+22},150"/>`).join('')}
+      <circle cx="270" cy="138" r="9"/><line x1="402" y1="128" x2="396" y2="160"/><path d="M562,140 l4,34 l-8,8"/><circle cx="686" cy="148" r="8"/></g></g>
+     <rect id="beam" x="456" y="0" width="48" height="400" fill="url(#beamG)" opacity="0"/>
+     <g id="holo" opacity="0" transform="translate(480,135)"><rect x="-170" y="-74" width="340" height="148" rx="14" fill="#7fe3ff" fill-opacity=".22" stroke="#7fe3ff" stroke-width="3"/>
+      <g fill="#7fe3ff" fill-opacity=".35" stroke="#bff3ff" stroke-width="2"><path d="M-150,-30 q30,-30 70,-10 q20,30 -10,50 q-40,10 -60,-40Z"/><path d="M-40,-50 q60,-20 110,0 q20,40 -20,60 q-60,20 -90,-20Z"/><path d="M90,0 q30,-20 60,10 q-10,40 -50,30Z"/></g>
+      <g transform="translate(-112,-6)"><g id="hx0"><circle r="12" fill="#fff3a0"/><path d="M-6,-6 L6,6 M6,-6 L-6,6" stroke="#d9483c" stroke-width="3.5"/></g></g>
+      <g transform="translate(15,-12)"><g id="hx1"><circle r="12" fill="#fff3a0"/><path d="M-6,-6 L6,6 M6,-6 L-6,6" stroke="#d9483c" stroke-width="3.5"/></g></g>
+      <g transform="translate(120,14)"><g id="hx2"><circle r="12" fill="#fff3a0"/><path d="M-6,-6 L6,6 M6,-6 L-6,6" stroke="#d9483c" stroke-width="3.5"/></g></g></g>
+     <g><rect x="446" y="404" width="68" height="${GY-404}" fill="#9a8c78" stroke="${INK}" stroke-width="3"/><rect x="432" y="394" width="96" height="14" rx="3" fill="#ad9f8a" stroke="${INK}" stroke-width="3"/><circle cx="480" cy="401" r="9" fill="#4a3d33"/></g>`
+});
+
+/* spiral binding like the sketchbook */
+(()=>{let s='';for(let y=18;y<540;y+=22)s+=`<path d="M948,${y} q14,4 6,14" fill="none" stroke="#222" stroke-width="3.5" stroke-linecap="round"/>`;$('#spiral').innerHTML=s})();
+
+/* ---------- ui bits ---------- */
+const keySVG=`<g><circle cx="-14" cy="0" r="10" fill="none" stroke="#c99a1a" stroke-width="6"/><line x1="-4" y1="0" x2="26" y2="0" stroke="#c99a1a" stroke-width="6" stroke-linecap="round"/>
+  <path d="M16,0 v9 M24,0 v7" stroke="#c99a1a" stroke-width="5"/><circle cx="-14" cy="0" r="10" fill="none" stroke="${INK}" stroke-width="1.5"/></g>`;
+const medalSVG=`<g id="mInner">
+  <g id="mFront"><circle r="44" fill="#f2c94c" stroke="${INK}" stroke-width="4"/><circle r="34" fill="none" stroke="#c99a1a" stroke-width="3"/><g transform="scale(1.5)">${emblem('#ffe680')}</g></g>
+  <g id="mBack"><circle r="44" fill="#e7b93a" stroke="${INK}" stroke-width="4"/>
+   <path d="M-30,14 L-16,-12 L-4,6 L8,-20 L26,14Z" fill="#fff3c4" stroke="${INK}" stroke-width="2"/>
+   <path d="M-28,24 q12,-10 22,-2 t24,-10" fill="none" stroke="${INK}" stroke-width="2" stroke-dasharray="4 4"/>
+   <path d="M4,-30 l8,8 M12,-30 l-8,8" stroke="#d9483c" stroke-width="3.5" stroke-linecap="round"/></g></g>`;
+function popText(id,txt,x,y,size,fill){return `<text id="${id}" x="${x}" y="${y}" text-anchor="middle" font-family="Luckiest Guy" font-size="${size}" fill="${fill}" stroke="${INK}" stroke-width="3" paint-order="stroke" opacity="0">${txt}</text>`}
+function scaleAt(el,s,x,y){el.setAttribute('transform',`translate(${x},${y}) scale(${s}) translate(${-x},${-y})`)}
+const id=s=>document.getElementById(s);
+
+/* ---------- scenes ---------- */
+const SCENES1=[
+ {name:'1 · Opening',dur:8.5,bg:'title',
+  init(){uiL.innerHTML=`<g id="ttl" text-anchor="middle">
+    <text x="480" y="118" font-family="Luckiest Guy" font-size="30" fill="#e4574b" stroke="${INK}" stroke-width="3" paint-order="stroke">THE ADVENTURE OF</text>
+    <text x="480" y="184" font-family="Luckiest Guy" font-size="60" fill="#f2c94c" stroke="${INK}" stroke-width="5" paint-order="stroke">FOUR ARCHAEOLOGISTS</text>
+    <text x="480" y="226" font-family="Patrick Hand" font-size="27" fill="${INK}">Episode 1: The Secret of the Golden Medallion</text></g>`},
+  update(t){
+    scaleAt(id('ttl'),elastic(prog(t,0,1.1)),480,170);
+    ORDER.forEach((n,i)=>{const c=CH[n];show(n);c.s=.66;c.x=200+i*185;
+      const k=prog(t,.9+i*.3,1.4+i*.3);c.y=(1-ease(k))*300;
+      jump(c,t,5.2+i*.15,26,.45);
+      if(n==='johan'&&t>2)c.aL=60+Math.sin(t*3)*8;
+      if(n==='julius'&&t>2.5){c.aL=30+Math.sin(t*4)*20;c.aR=-30-Math.sin(t*4)*20}
+      if(n==='asher'&&t>3)c.aR=-50;
+      if(n==='jothon'&&t>2.2)c.aL=40+Math.sin(t*9)*14;});
+  },
+  lines:[{t:2.4,who:'nar',text:'In a land full of clouds and sunshine lived four best friends... four archaeologists, always ready for adventure!'}],
+  events:[{t:.05,f:'jingle'},{t:.95,f:'pop'},{t:1.25,f:'pop'},{t:1.55,f:'pop'},{t:1.85,f:'pop'}]},
+
+ {name:'2 · The Team',dur:21.5,bg:'camp',
+  init(){uiL.innerHTML=`<g id="card" opacity="0"><rect id="cardBox" x="-130" y="-46" width="260" height="70" rx="14" fill="#fff" stroke-width="4"/>
+     <text id="cardN" y="-14" text-anchor="middle" font-family="Luckiest Guy" font-size="27"></text>
+     <text id="cardR" y="12" text-anchor="middle" font-family="Patrick Hand" font-size="21" fill="${INK}"></text></g>`;this._idx=-1},
+  roles:['The Leader • Investigator','The Cleaner & Sifter','The Digger','The Scientist'],
+  update(t){
+    const X=[230,400,570,735];
+    ORDER.forEach((n,i)=>{const c=CH[n];show(n);walkTo(c,X[i]-620,X[i],t,0,2.8);if(t>=2.8)c.flip=false;});
+    const idx=Math.floor((t-3)/4.6), loc=(t-3)-idx*4.6, card=id('card');
+    if(idx>=0&&idx<4){
+      const n=ORDER[idx],c=CH[n];
+      if(idx!==this._idx){this._idx=idx;id('cardN').textContent=CAST[n].name;id('cardN').setAttribute('fill',CAST[n].color);
+        id('cardBox').setAttribute('stroke',CAST[n].color);id('cardR').textContent=this.roles[idx]}
+      card.setAttribute('opacity',Math.min(1,loc*5,(4.6-loc)*5).toFixed(2));
+      const s=elastic(prog(loc,0,.7));card.setAttribute('transform',`translate(${X[idx]},150) scale(${s})`);
+      jump(c,loc,0,34,.5);
+      if(n==='johan'){c.aL=72+Math.sin(t*5)*10}
+      if(n==='jothon'){c.aL=55+Math.sin(t*11)*22;c.aR=-25+Math.sin(t*18)*8}
+      if(n==='julius'){const a=45+Math.sin(t*5)*40;c.aL=a;c.aR=-a;jump(c,loc,1.5,22,.4);jump(c,loc,2.3,22,.4)}
+      if(n==='asher'){c.aL=85;c.aR=-85}
+    } else card.setAttribute('opacity',0);
+  },
+  lines:[
+   {t:3.1,who:'johan',text:'I\'m Johan, the leader of the team! With my magnifying glass, no clue gets past me!'},
+   {t:7.7,who:'jothon',text:'I\'m Thor! With my brush and sieve, we can clean and find even the tiniest artifact.'},
+   {t:12.3,who:'julius',text:'Julius here! Two shovels means double the digging speed! Hehe!'},
+   {t:16.9,who:'asher',text:'I\'m Asher, the scientist. In my lab, we\'ll find out how old everything we discover really is.'}],
+  events:[{t:3,f:'pop'},{t:7.6,f:'pop'},{t:12.2,f:'pop'},{t:16.8,f:'pop'}]},
+
+ {name:'3 · The Clue',dur:13,bg:'dig',
+  update(t,dt){
+    const J=CH.johan;show(...ORDER);
+    walkTo(J,120,560,t,.3,4);J.flip=true;if(t>=4){J.aL=50+Math.sin(t*3)*12} else if(t<.3){J.aL=30}
+    walkTo(CH.jothon,-90,380,t,.7,4.3);walkTo(CH.julius,-230,260,t,1.1,4.7);walkTo(CH.asher,-370,130,t,1.5,5.1);
+    ['jothon','julius','asher'].forEach(n=>{CH[n].flip=true;jump(CH[n],t,7.9,34,.45)});
+    const k=prog(t,5.6,7.2);id('rockEm').setAttribute('opacity',k);
+    id('rockGlow').setAttribute('opacity',(k*(.7+.3*Math.sin(t*6))).toFixed(2));
+    if(t>7.2)emit(dt,6,708+(Math.random()*50-25),428,{color:'#fff3a0',stroke:'#c99a1a',g:-40,vy:[-40,-10],r:[2,4],life:[.6,1]});
+    if(t>10){J.flip=false;J.aL=95}
+  },
+  lines:[
+   {t:4.6,who:'johan',text:'Wait a minute... there\'s something strange about this rock.'},
+   {t:7.8,who:'julius',text:'Whoa! That looks just like the logo on our shirts!'},
+   {t:10.2,who:'johan',text:'Something must be buried here. Julius, start digging!'}],
+  events:[{t:6,f:'sparkle'},{t:7.9,f:'wow'}]},
+
+ {name:'4 · The Dig',dur:12.5,bg:'dig',
+  init(){uiL.innerHTML=popText('clang','CLANG!',600,350,64,'#ffd95a')},
+  update(t,dt){
+    show(...ORDER);
+    id('rockEm').setAttribute('opacity',1);
+    const Ju=CH.julius;Ju.x=470;Ju.flip=true;
+    if(t<7.6){const a=Math.sin(t*9);Ju.aL=35+a*40;Ju.aR=-(15-a*30);Ju.bob=-Math.abs(a)*4;
+      emit(dt,26,560,466,{vx:[40,220],vy:[-320,-160],dx:[-30,30],color:Math.random()<.5?'#a0784a':'#c8a56e',r:[3,7]});}
+    else{Ju.aL=70;Ju.aR=-20;jump(Ju,t,7.6,30,.4)}
+    const r=lerp(0,72,prog(t,.5,7.5));const h=id('hole');h.setAttribute('rx',r.toFixed(1));h.setAttribute('ry',(r*.26).toFixed(1));
+    CH.johan.x=330;CH.johan.flip=true;CH.jothon.x=210;CH.jothon.flip=true;CH.asher.x=95;CH.asher.flip=true;
+    ['johan','jothon','asher'].forEach((n,i)=>jump(CH[n],t,7.7+i*.08,24,.4));
+    const cl=id('clang'),ck=prog(t,7.5,7.9);cl.setAttribute('opacity',t>7.5&&t<9.6?1:0);scaleAt(cl,elastic(ck)*(1+.05*Math.sin(t*20)),600,330);
+    if(t>10.2){CH.johan.aL=80}
+  },
+  lines:[
+   {t:.4,who:'julius',text:'Leave it to me! Dig... dig... dig!'},
+   {t:3.9,who:'nar',text:'Julius dug super fast with his two shovels...'},
+   {t:8,who:'julius',text:'Ouch! I hit something hard... it feels like a box!'},
+   {t:10.3,who:'johan',text:'Thor, your turn. Nice and slow!'}],
+  events:[...Array.from({length:11},(_,i)=>({t:.7+i*.62,f:'thud'})),{t:7.5,f:'clang'}]},
+
+ {name:'5 · The Key',dur:13,bg:'dig',
+  init(){uiL.innerHTML=`<g id="key" opacity="0">${keySVG}</g>`},
+  update(t,dt){
+    show(...ORDER);
+    id('rockEm').setAttribute('opacity',1);
+    const h=id('hole');h.setAttribute('rx',72);h.setAttribute('ry',19);
+    id('box').setAttribute('opacity',1);
+    id('dirt').setAttribute('opacity',(1-prog(t,.8,6)).toFixed(2));
+    const Jo=CH.jothon;Jo.x=462;Jo.flip=true;
+    if(t<6.3){Jo.aL=18+Math.sin(t*20)*16;emit(dt,18,550,452,{color:'#e6d2a6',g:-30,vx:[-60,80],vy:[-60,-20],r:[4,9],life:[.5,.9]});
+      if(dt>0&&Math.random()<dt*7)SFX.brush();}
+    else if(t<9.4){Jo.aL=10;Jo.aR=-45+Math.sin(t*28)*9;
+      emit(dt,30,Jo.x-88,Jo.y+GY-80,{color:'#d8bb83',g:500,vx:[-15,15],vy:[0,30],dx:[-22,22],r:[2,3.5],life:[.4,.6]});}
+    else{Jo.aL=10;Jo.aR=-40;jump(Jo,t,9.5,30,.45)}
+    const ky=id('key'),kk=prog(t,9.2,9.9);ky.setAttribute('opacity',t>9.2?1:0);
+    const ky_y=lerp(390,300,ease(kk));ky.setAttribute('transform',`translate(375,${ky_y}) rotate(${-20+Math.sin(t*3)*8}) scale(${1.3*elastic(kk)})`);
+    if(t>9.6)emit(dt,10,375+(Math.random()*60-30),ky_y,{color:'#fff3a0',stroke:'#c99a1a',g:-20,vy:[-30,-5],r:[2,4],life:[.4,.8]});
+    CH.johan.x=690;CH.johan.flip=false;CH.julius.x=820;CH.julius.flip=false;CH.asher.x=110;CH.asher.flip=true;
+    CH.julius.aL=20;CH.julius.aR=-20;
+    ['johan','julius','asher'].forEach((n,i)=>jump(CH[n],t,9.7+i*.1,26,.4));
+    if(t>11.2){CH.asher.aL=80;CH.asher.aR=-80}
+  },
+  lines:[
+   {t:.4,who:'jothon',text:'Brush... brush... nice and gentle, so nothing breaks.'},
+   {t:5.6,who:'jothon',text:'There it is! An ancient stone box!'},
+   {t:7,who:'nar',text:'Thor sifted the sand around the box... and something sparkled!'},
+   {t:9.8,who:'jothon',text:'A golden key!'},
+   {t:11.3,who:'asher',text:'Let\'s take it to my lab!'}],
+  events:[{t:5.5,f:'pop'},{t:9.3,f:'sparkle'}]},
+
+ {name:'6 · The Lab',dur:12.5,bg:'lab',
+  update(t,dt){
+    show(...ORDER);
+    const A=CH.asher;A.x=520;A.flip=true;
+    A.aL=t<3.5?30+Math.sin(t*2.2)*25:55;A.aR=-10;
+    if(t>3.5){[[732,282],[791,300],[851,266],[896,318]].forEach(([x,y])=>emit(dt,5,x,y,{color:'#fff',stroke:'#5aa9c9',fo:.6,g:-90,vx:[-12,12],vy:[-40,-10],r:[3,7],life:[.8,1.3]}));
+      if(dt>0&&Math.random()<dt*5)SFX.bubble();}
+    const glow=t>6.6&&t<9.5?(.5+.5*Math.sin(t*14)):0;
+    id('jars').setAttribute('filter',glow?`drop-shadow(0 0 ${(6+glow*10).toFixed(0)}px #9be07a)`:'');
+    CH.johan.x=140;CH.jothon.x=262;CH.julius.x=385;['johan','jothon','julius'].forEach((n,i)=>{CH[n].flip=true;jump(CH[n],t,9.9+i*.1,40,.5)});
+    if(t>9.9){CH.julius.aL=80;CH.julius.aR=-80}
+    jump(A,t,7,18,.35);
+  },
+  lines:[
+   {t:.4,who:'asher',text:'I\'ll take a sample from the box... and put it in a petri dish...'},
+   {t:3.8,who:'nar',text:'Blub, blub, blub! The bottles in Asher\'s lab started bubbling.'},
+   {t:6.9,who:'asher',text:'According to my test... this box is one thousand years old!'},
+   {t:9.9,who:'julius',text:'Whoooa!'}],
+  events:[{t:6.8,f:'sparkle'},{t:9.9,f:'wow'}]},
+
+ {name:'7 · The Medallion',dur:16.5,bg:'open',
+  init(){uiL.innerHTML=`<g id="key" opacity="0">${keySVG}</g><g id="medal" opacity="0">${medalSVG}</g>${popText('tbc','TO BE CONTINUED...',480,130,58,'#e4574b')}`},
+  update(t,dt){
+    show(...ORDER);
+    CH.jothon.x=230;CH.jothon.flip=true;CH.johan.x=355;CH.johan.flip=true;CH.julius.x=625;CH.asher.x=745;
+    const J=CH.johan;
+    if(t>1.8&&t<3.4)J.aL=40;
+    const ky=id('key'),kk=prog(t,1.9,3.2);ky.setAttribute('opacity',t>1.9&&t<3.6?1:0);
+    ky.setAttribute('transform',`translate(${lerp(420,452,ease(kk))},${lerp(380,462,ease(kk))}) rotate(${lerp(-30,0,kk)})`);
+    const lk=ease(prog(t,3.6,4.6));id('lid').setAttribute('transform',`rotate(${-120*lk},-50,-40)`);
+    const r=id('rays');r.setAttribute('opacity',(prog(t,4.4,5.2)*.85).toFixed(2));r.setAttribute('transform',`translate(480,410) rotate(${t*14})`);
+    id('bigGlow').setAttribute('opacity',prog(t,4.4,5));
+    const m=id('medal'),mk=prog(t,4.6,7);m.setAttribute('opacity',t>4.6?1:0);
+    const my=lerp(430,250,ease(mk))+Math.sin(t*2.5)*5*(t>7);
+    const ang=ease(prog(t,4.8,8.8))*5*Math.PI, sx=Math.cos(ang);
+    m.setAttribute('transform',`translate(480,${my.toFixed(1)}) scale(${(1.3*Math.max(.04,Math.abs(sx))).toFixed(3)},1.3)`);
+    id('mFront').style.display=sx>=0?'':'none';id('mBack').style.display=sx<0?'':'none';
+    if(t>5)emit(dt,12,480+(Math.random()*120-60),my+(Math.random()*80-40),{color:'#fff3a0',stroke:'#c99a1a',g:-30,vy:[-40,-10],r:[2,4.5],life:[.5,1]});
+    ORDER.forEach((n,i)=>{const c=CH[n];jump(c,t,4.7+i*.07,38,.5);if(t>4.7&&t<8.5){c.aL=c.flip?80:70;c.aR=-70}});
+    if(t>11.4){J.aL=100+Math.sin(t*6)*10}
+    if(t>13.6)ORDER.forEach((n,i)=>{jump(CH[n],t,13.7+i*.1,30,.45);CH[n].aL=85;CH[n].aR=-85});
+    const tb=id('tbc'),tk=prog(t,13.6,14.4);tb.setAttribute('opacity',t>13.6?1:0);scaleAt(tb,elastic(tk),480,110);
+  },
+  lines:[
+   {t:.5,who:'johan',text:'Are you ready, team?'},
+   {t:1.9,who:'julius',text:'Ready as ever!'},
+   {t:4.9,who:'nar',text:'Inside the box... a Golden Medallion, with the very same symbol as their logo!'},
+   {t:8.9,who:'asher',text:'Wait... there\'s a map on the back! It leads to Cloud Mountain!'},
+   {t:11.5,who:'johan',text:'Team... our adventure is only just beginning!'},
+   {t:14,who:'nar',text:'Don\'t miss the next chapter of The Adventure of Four Archaeologists!'}],
+  events:[{t:3.3,f:'click'},{t:3.6,f:'creak'},{t:4.6,f:'sparkle'},{t:4.8,f:'jingle'},{t:13.6,f:'jingle'}]}
+];
+
+/* ===================== EPISODE 2 ===================== */
+const miniMedal=`<circle r="40" fill="#e7b93a" stroke="${INK}" stroke-width="4"/>
+  <path d="M-28,14 L-15,-12 L-3,6 L8,-18 L25,14Z" fill="#fff3c4" stroke="${INK}" stroke-width="2"/>
+  <path d="M-26,24 q12,-10 22,-2 t22,-10" fill="none" stroke="${INK}" stroke-width="2" stroke-dasharray="4 4"/>
+  <path d="M4,-30 l8,8 M12,-30 l-8,8" stroke="#d9483c" stroke-width="3.5" stroke-linecap="round"/>`;
+function handPos(c,side){
+  const d=side==='L'?-1:1,a=(side==='L'?c.aL:c.aR)*Math.PI/180,vx=d*28,vy=78;
+  const lx=d*32+vx*Math.cos(a)-vy*Math.sin(a), ly=-194+vx*Math.sin(a)+vy*Math.cos(a)+c.bob;
+  return [c.x+(c.flip?-1:1)*lx*c.s, GY+c.y+ly*c.s];
+}
+function shake(a){id('world').setAttribute('transform',`translate(${(Math.sin(T*61)*a).toFixed(1)},${(Math.cos(T*47)*a).toFixed(1)})`)}
+function titleScene(sub,nar){const s1=SCENES1[0];return {name:'1 · Opening',dur:8.5,bg:'title',
+  init(){uiL.innerHTML=`<g id="ttl" text-anchor="middle">
+    <text x="480" y="118" font-family="Luckiest Guy" font-size="30" fill="#e4574b" stroke="${INK}" stroke-width="3" paint-order="stroke">THE ADVENTURE OF</text>
+    <text x="480" y="184" font-family="Luckiest Guy" font-size="60" fill="#f2c94c" stroke="${INK}" stroke-width="5" paint-order="stroke">FOUR ARCHAEOLOGISTS</text>
+    <text x="480" y="226" font-family="Patrick Hand" font-size="27" fill="${INK}">${sub}</text></g>`},
+  update:s1.update,events:s1.events,lines:[{t:2.4,who:'nar',text:nar}]}}
+
+const SCENES2=[
+ titleScene('Episode 2: The Door of Four Tools','Last time, our four archaeologists found a Golden Medallion... with a secret map leading to Cloud Mountain!'),
+
+ {name:'2 · The Trail',dur:14.5,bg:'trail',
+  init(){uiL.innerHTML=`<g id="mini" opacity="0">${miniMedal}</g>`},
+  update(t,dt){
+    show(...ORDER);
+    const P={johan:520,jothon:380,julius:255,asher:130};
+    ORDER.forEach((n,i)=>{const c=CH[n];walkTo(c,P[n]-560,P[n],t,.2+i*.15,3.8+i*.15);c.flip=true});
+    const J=CH.johan;
+    if(t>4){J.flip=false;J.aL=72+Math.sin(t*2)*6;J.aR=-62}
+    const mm=id('mini');
+    if(t>4&&t<12.3){const [hx,hy]=handPos(J,'R');mm.setAttribute('opacity',1);mm.setAttribute('transform',`translate(${hx.toFixed(1)},${(hy-16).toFixed(1)}) scale(.55)`)}
+    else mm.setAttribute('opacity',0);
+    jump(CH.jothon,t,8.5,26,.45);
+    if(t>11.3&&t<12.3){CH.julius.aL=80;CH.julius.aR=-80;jump(CH.julius,t,11.4,30,.45)}
+    if(t>12.3)ORDER.forEach((n,i)=>walkTo(CH[n],P[n],P[n]+640,t,12.3+i*.08,14.4+i*.05));
+  },
+  lines:[
+   {t:4.2,who:'johan',text:'According to the map... first we cross the river, then we find the Door of Four Tools.'},
+   {t:8.5,who:'jothon',text:'The Door of Four Tools? Hmm... four tools, and four of us!'},
+   {t:11.3,who:'julius',text:'Then what are we waiting for? Let\'s go!'}],
+  events:[{t:4,f:'pop'},{t:11.4,f:'pop'}]},
+
+ {name:'3 · The River',dur:15.5,bg:'river',
+  init(){this._spl=false},
+  update(t,dt){
+    show(...ORDER);
+    const P={asher:60,jothon:150,johan:235,julius:300}, Q={johan:900,julius:815,jothon:730,asher:650};
+    ORDER.forEach(n=>{const c=CH[n];walkTo(c,P[n]-420,P[n],t,0,3);c.flip=true});
+    jump(CH.asher,t,3.2,22,.4);
+    const Ju=CH.julius;
+    if(t>6.3&&t<9.2){const a=Math.sin(t*9);Ju.aL=35+a*40;Ju.aR=-(15-a*30);Ju.bob=-Math.abs(a)*4;
+      emit(dt,22,345,466,{vx:[-170,-40],vy:[-300,-150],color:Math.random()<.5?'#a0784a':'#c8a56e'})}
+    let ang=0;if(t>7&&t<9.2)ang=Math.sin(t*22)*2.5*prog(t,7,9.2);
+    if(t>=9.2){const fk=prog(t,9.2,10.1);ang=90*fk*fk}
+    id('log').setAttribute('transform',`rotate(${ang.toFixed(1)},360,${GY})`);
+    if(t>=10.1&&!this._spl&&dt>0){this._spl=true;spawn(520,470,{n:34,color:'#9fdcf5',stroke:'#3a94c0',vx:[-160,160],vy:[-380,-160],r:[4,8],life:[.7,1.1]})}
+    if(t>10.3&&t<11.4)CH.johan.aL=95;
+    ORDER.forEach((n,i)=>{const c=CH[n];if(t>11.4){walkTo(c,P[n],Q[n],t,11.4+i*.15,14.6+i*.12);
+      if(c.x>395&&c.x<625){c.y=-10;c.aL=75+Math.sin(T*5+i)*10;c.aR=-75+Math.sin(T*5+i)*10}}});
+  },
+  lines:[
+   {t:3.2,who:'asher',text:'Uh-oh. The water is way too fast to swim across!'},
+   {t:6,who:'julius',text:'Leave it to me! Shovels... do your thing!'},
+   {t:10.4,who:'johan',text:'Nice one, Julius! Everyone, across the log!'}],
+  events:[...Array.from({length:5},(_,i)=>({t:6.6+i*.55,f:'thud'})),{t:9.2,f:'creak'},{t:10.1,f:'thud'},{t:10.15,f:'bubble'}]},
+
+ {name:'4 · The Dark Cave',dur:15,bg:'cave',
+  init(){uiL.innerHTML=`<defs><radialGradient id="holeG"><stop offset="0" stop-color="#000"/><stop offset=".55" stop-color="#000"/><stop offset="1" stop-color="#fff"/></radialGradient>
+    <mask id="darkM" maskUnits="userSpaceOnUse" x="0" y="0" width="960" height="540"><rect width="960" height="540" fill="#fff"/><circle id="lightC" r="0" fill="url(#holeG)"/></mask></defs>
+    <rect id="dark" width="960" height="540" fill="#0c0906" opacity=".9" mask="url(#darkM)"/>
+    <g id="lantern" opacity="0"><circle r="40" fill="url(#glowG)"/><rect x="-10" y="-16" width="20" height="28" rx="7" fill="#b6ff9a" stroke="${INK}" stroke-width="3"/><rect x="-6" y="-24" width="12" height="9" fill="#555" stroke="${INK}" stroke-width="2"/></g>`},
+  update(t,dt){
+    show(...ORDER);
+    const P={johan:420,jothon:290,julius:165,asher:560};
+    ORDER.forEach((n,i)=>{const c=CH[n];walkTo(c,P[n]-560,P[n],t,i*.1,2.8+i*.1);c.flip=true});
+    const Th=CH.jothon;if(t>3&&t<8)Th.x+=Math.sin(T*40)*1.5;
+    const A=CH.asher;
+    if(t>6.4&&t<8){A.aL=40+Math.sin(t*14)*25;A.aR=-40-Math.sin(t*14+1)*25;
+      emit(dt,14,A.x+60,GY-120,{color:'#b6ff9a',stroke:'#3c9a58',fo:.7,g:-80,vy:[-50,-10],r:[3,6],life:[.6,1]})}
+    let lr=0;
+    if(t>=8){A.aL=115;const [hx,hy]=handPos(A,'L');const lt=id('lantern');lt.setAttribute('opacity',1);lt.setAttribute('transform',`translate(${hx.toFixed(1)},${(hy-12).toFixed(1)})`);
+      lr=lerp(0,300,ease(prog(t,8,9.2)))+lerp(0,260,ease(prog(t,11.4,12.6)))+Math.sin(T*9)*6;
+      const lc=id('lightC');lc.setAttribute('cx',hx.toFixed(1));lc.setAttribute('cy',(hy-12).toFixed(1));lc.setAttribute('r',Math.max(0,lr).toFixed(1));}
+    if(t>12)ORDER.forEach((n,i)=>jump(CH[n],t,12.1+i*.08,22,.4));
+    if(t>12.2)CH.johan.aL=110;
+  },
+  lines:[
+   {t:3,who:'jothon',text:'It\'s so dark in here... I can\'t see a thing!'},
+   {t:5.5,who:'asher',text:'No problem. Time for a little chemistry!'},
+   {t:9.4,who:'nar',text:'Asher\'s glowing potion lit up the whole cave!'},
+   {t:12,who:'johan',text:'Look! There are drawings on the walls!'}],
+  events:[{t:6.5,f:'bubble'},{t:7,f:'bubble'},{t:7.5,f:'bubble'},{t:8,f:'sparkle'},{t:12,f:'wow'}]},
+
+ {name:'5 · The Door',dur:17.5,bg:'chamber',
+  init(){uiL.innerHTML=`<circle id="orb" r="13" fill="#fff3a0" stroke="#c99a1a" stroke-width="3" opacity="0"/>`},
+  update(t,dt){
+    show(...ORDER);
+    const P={johan:150,jothon:258,julius:702,asher:812},F={johan:true,jothon:true,julius:false,asher:false};
+    ORDER.forEach(n=>{CH[n].x=P[n];CH[n].flip=F[n]});
+    jump(CH.jothon,t,3.9,24,.4);
+    const TA=[9,10.2,11.4,12.6],SX=[395,452,509,566],SY=332,orb=id('orb');let on=false;
+    ORDER.forEach((n,i)=>{const c=CH[n];
+      if(t>TA[i]-.5){c.aL=100;jump(c,t,TA[i]-.5,28,.45)}
+      if(t>=TA[i]&&t<TA[i]+.8){const [hx,hy]=handPos(c,'L'),k=ease(prog(t,TA[i],TA[i]+.8));
+        orb.setAttribute('cx',lerp(hx,SX[i],k).toFixed(1));orb.setAttribute('cy',(lerp(hy,SY,k)-Math.sin(Math.PI*k)*70).toFixed(1));on=true;
+        emit(dt,30,lerp(hx,SX[i],k),lerp(hy,SY,k)-Math.sin(Math.PI*k)*70,{color:'#fff3a0',g:0,vx:[-20,20],vy:[-20,20],r:[2,4],life:[.3,.5]})}
+      id('slot'+i).setAttribute('opacity',prog(t,TA[i]+.75,TA[i]+1).toFixed(2));});
+    orb.setAttribute('opacity',on?1:0);
+    const k=ease(prog(t,13.9,16.2));id('door').setAttribute('transform',`translate(0,${(-300*k).toFixed(1)})`);
+    id('doorLight').setAttribute('opacity',(.4+.6*k).toFixed(2));
+    if(t>13.7&&t<16.4)shake(3);
+    if(t>16.2)ORDER.forEach((n,i)=>jump(CH[n],t,16.3+i*.06,24,.4));
+  },
+  lines:[
+   {t:.5,who:'johan',text:'There it is... the Door of Four Tools!'},
+   {t:3.8,who:'jothon',text:'Look at the shapes! A magnifying glass, a brush, a shovel... and a petri dish!'},
+   {t:7.8,who:'johan',text:'That\'s us! Everyone, raise your tools... together!'},
+   {t:14,who:'nar',text:'With a deep rumble... the ancient door slowly opened!'}],
+  events:[{t:9.8,f:'sparkle'},{t:11,f:'sparkle'},{t:12.2,f:'sparkle'},{t:13.4,f:'sparkle'},{t:13.7,f:'rumble'},{t:16.2,f:'jingle'}]},
+
+ {name:'6 · The Hall',dur:17,bg:'hall',
+  init(){uiL.innerHTML=`<g id="hm" opacity="0">${miniMedal}</g>`},
+  update(t,dt){
+    show(...ORDER);
+    const P={jothon:205,johan:345,julius:625,asher:755},F={jothon:true,johan:true,julius:false,asher:false};
+    ORDER.forEach(n=>{const c=CH[n];c.x=P[n];c.flip=F[n];c.s=.8});
+    const J=CH.johan,hm=id('hm');
+    if(t>5.9&&t<6.6){J.aR=-70}
+    if(t>5.9){const [hx,hy]=handPos(J,'R');const k=ease(prog(t,6.6,8));
+      const x=lerp(hx,480,k),y=lerp(hy-10,399,k)-Math.sin(Math.PI*k)*60;
+      hm.setAttribute('opacity',1);hm.setAttribute('transform',`translate(${x.toFixed(1)},${y.toFixed(1)}) scale(${lerp(.45,.3,k).toFixed(2)})`)}
+    const b=prog(t,8,8.6),h=prog(t,8.6,9.4);
+    id('beam').setAttribute('opacity',(b*(.75+.25*Math.sin(T*8))).toFixed(2));
+    id('holo').setAttribute('opacity',h.toFixed(2));id('mural').setAttribute('opacity',(1-.75*h).toFixed(2));
+    [0,1,2].forEach(i=>{const m=id('hx'+i);if(m)m.setAttribute('transform',`scale(${(1+.18*Math.sin(T*5+i*2)).toFixed(3)})`)});
+    if(t>8.6)ORDER.forEach((n,i)=>jump(CH[n],t,8.7+i*.07,26,.45));
+    if(t>12.5&&t<14){CH.jothon.aL=100}
+    if(t>14.8)shake(2.5*prog(t,14.8,16));
+  },
+  lines:[
+   {t:.5,who:'asher',text:'These carvings... they look exactly like us!'},
+   {t:3.3,who:'julius',text:'Four archaeologists... with the same four tools!'},
+   {t:5.9,who:'johan',text:'And the medallion fits... right here.'},
+   {t:9.3,who:'nar',text:'A beam of light shot up... and revealed a map with three more glowing marks!'},
+   {t:12.6,who:'jothon',text:'Three more medallions... hidden around the world!'}],
+  events:[{t:8,f:'click'},{t:8.1,f:'sparkle'},{t:8.6,f:'jingle'},{t:14.8,f:'rumble'}]},
+
+ {name:'7 · Escape!',dur:10.5,bg:'cave',
+  update(t,dt){
+    show(...ORDER);
+    const P={asher:250,jothon:380,johan:520,julius:660};
+    ORDER.forEach((n,i)=>{const c=CH[n];c.x=P[n];c.flip=true;walkTo(c,P[n],P[n]+900,t,2.4+i*.12,6.4+i*.12);
+      if(t>2.4){c.leg*=1.3;c.aL=60+Math.sin(T*14+i)*25;c.aR=-60-Math.sin(T*14+i)*25}});
+    jump(CH.julius,t,.2,18,.35);
+    shake(4);
+    emit(dt,7,Math.random()*960,-20,{color:'#8a7e70',stroke:INK,r:[8,17],vx:[-20,20],vy:[0,80],g:900,life:[.7,1]});
+    emit(dt,10,Math.random()*960,GY-4,{color:'#c9b391',g:-20,vy:[-40,-10],vx:[-30,30],r:[5,10],life:[.6,1]});
+  },
+  lines:[
+   {t:.3,who:'julius',text:'Uh-oh... the whole cave is shaking!'},
+   {t:1.9,who:'johan',text:'Everybody... RUN!'},
+   {t:6.6,who:'nar',text:'The four friends ran as fast as their legs could carry them...'}],
+  events:[{t:0,f:'rumble'},{t:2,f:'rumble'},{t:4,f:'rumble'},{t:6,f:'rumble'}]},
+
+ {name:'8 · Sunset',dur:17,bg:'sunset',
+  init(){uiL.innerHTML=popText('tbc','TO BE CONTINUED...',480,130,58,'#e4574b')},
+  update(t,dt){
+    show(...ORDER);
+    const P={johan:270,jothon:405,julius:540,asher:675};
+    ORDER.forEach((n,i)=>{const c=CH[n];walkTo(c,P[n]-640,P[n],t,i*.1,2.6+i*.1);
+      if(t>2.7+i*.1){c.flip=false;if(t<7)c.bob=-Math.abs(Math.sin(T*6+i))*4}});
+    if(t>5&&t<7.3){CH.asher.aL=100}
+    if(t>7.3&&t<9.5){CH.julius.aL=60;CH.julius.aR=-60;jump(CH.julius,t,7.4,24,.4)}
+    if(t>9.6&&t<14.5)CH.johan.aL=95+Math.sin(t*3)*8;
+    const tb=id('tbc'),tk=prog(t,14.6,15.4);tb.setAttribute('opacity',t>14.6?1:0);scaleAt(tb,elastic(tk),480,110);
+    if(t>14.6)ORDER.forEach((n,i)=>{jump(CH[n],t,14.7+i*.1,30,.45);CH[n].aL=85;CH[n].aR=-85});
+  },
+  lines:[
+   {t:2.8,who:'nar',text:'They made it out... just in time!'},
+   {t:5,who:'asher',text:'Phew! That was way too close!'},
+   {t:7.4,who:'julius',text:'Hehe... best adventure ever!'},
+   {t:9.6,who:'johan',text:'Team... one medallion found, three more to go. Next stop: the Island of Whispers!'}],
+  events:[{t:14.6,f:'jingle'}]}
+];
+/* end SCENES2 */
+/* ===================== EPISODE 3 ===================== */
+const palmAt=(x,y,s=1,f=1)=>`<g transform="translate(${x},${y}) scale(${s*f},${s})"><path d="M-6,0 Q-16,-70 8,-140 L20,-137 Q2,-70 9,0Z" fill="#a8743a" stroke="${INK}" stroke-width="3"/>
+  <g transform="translate(14,-140)">${[0,40,95,140,180].map(a=>`<path d="M0,0 Q-45,-36 -92,8 Q-45,-16 0,0Z" fill="#5cb85c" stroke="${INK}" stroke-width="2.5" transform="rotate(${a})"/>`).join('')}
+  <circle cx="-5" cy="8" r="7" fill="#6b4a2b" stroke="${INK}" stroke-width="2"/><circle cx="7" cy="9" r="7" fill="#6b4a2b" stroke="${INK}" stroke-width="2"/></g></g>`;
+const seaWaves=(y0)=>`<g id="waves" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" opacity=".85">${[[60,0],[230,22],[420,8],[610,30],[800,14],[140,48],[520,56],[880,62]].map(([x,d])=>`<path d="M${x},${y0+d} q14,-7 28,0 t28,0"/>`).join('')}</g>`;
+const smallHull=(x,y,s,f=1)=>`<g transform="translate(${x},${y}) scale(${s*f},${s})"><path d="M-190,-6 L190,-6 L150,48 L-150,48Z" fill="#c8743c" stroke="${INK}" stroke-width="4" stroke-linejoin="round"/><path d="M-176,12 L176,12" stroke="#8a4f22" stroke-width="5"/></g>`;
+const isle=(x,y,s)=>`<g transform="translate(${x},${y}) scale(${s})"><path d="M-130,0 Q0,-60 130,0Z" fill="#f1dca8" stroke="${INK}" stroke-width="3"/>${palmAt(-30,-34,.55)}${palmAt(35,-30,.45,-1)}
+  <g opacity=".7">${cloud(-150,-90,140,40)}</g></g>`;
+const seaBG=(sunset)=>(sunset?sky('sunsetG','#ff9a3c'):sky())+
+  `<rect x="0" y="380" width="960" height="160" fill="${sunset?'#4a86b8':'#4fa9d9'}"/><line x1="0" y1="380" x2="960" y2="380" stroke="${INK}" stroke-width="3"/>
+   ${sunset?`<g id="stars">${[[90,60],[220,110],[330,40],[460,90],[600,50],[700,120],[380,150]].map(([x,y],i)=>`<circle class="star" cx="${x}" cy="${y}" r="3.5" fill="#fff8d0"/>`).join('')}</g>`:''}
+   <g id="isle">${isle(800,384,1)}</g>${seaWaves(400)}
+   <g id="gulls" fill="none" stroke="${INK}" stroke-width="3" stroke-linecap="round"><path d="M0,0 q10,-10 20,0 q10,-10 20,0"/><path d="M60,26 q8,-8 16,0 q8,-8 16,0"/></g>`;
+const stoneFace=()=>`<g id="statue"><rect x="512" y="${GY-14}" width="276" height="20" rx="4" fill="#7f7a70" stroke="${INK}" stroke-width="3"/>
+  <path d="M528,${GY-12} L528,170 Q528,118 580,112 L720,112 Q772,118 772,170 L772,${GY-12}Z" fill="#a19b8f" stroke="${INK}" stroke-width="4"/>
+  <path d="M540,140 q40,-14 80,0 M680,140 q40,-14 80,0" stroke="#7f7a70" stroke-width="5" fill="none"/>
+  <path d="M560,222 L640,214 M660,214 L740,222" stroke="${INK}" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="605" cy="258" r="24" fill="#3a332c" stroke="${INK}" stroke-width="3"/><circle cx="695" cy="258" r="24" fill="#3a332c" stroke="${INK}" stroke-width="3"/>
+  <circle id="seL" cx="605" cy="258" r="15" fill="#8ff0ff" opacity="0"/><circle id="seR" cx="695" cy="258" r="15" fill="#8ff0ff" opacity="0"/>
+  <path d="M650,270 L630,338 L670,338Z" fill="#938d81" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
+  <g id="smouth"><rect x="586" y="372" width="128" height="26" rx="6" fill="#2a241f" stroke="${INK}" stroke-width="4"/>
+   <g id="stairs" opacity="0" stroke="#6b6156" stroke-width="3"><line x1="600" y1="420" x2="700" y2="420"/><line x1="608" y1="438" x2="692" y2="438"/><line x1="616" y1="452" x2="684" y2="452"/></g></g>
+  <path d="M540,300 q12,24 0,46 M760,320 q-12,20 0,40 M560,420 q20,8 30,30" stroke="#6d9a4a" stroke-width="7" fill="none" stroke-linecap="round"/></g>`;
+const jungleBack=(dim)=>`<rect width="960" height="540" fill="${dim?'#27482f':'#2f5d3a'}"/>
+  ${[[40,26],[170,18],[330,30],[480,22],[650,28],[820,20],[920,24]].map(([x,w])=>`<rect x="${x}" y="0" width="${w}" height="${GY}" fill="#3e2c1c" stroke="${INK}" stroke-width="2" opacity=".7"/>`).join('')}
+  ${[[90,120,0],[260,80,40],[420,140,-30],[600,90,20],[760,130,-40],[900,70,30]].map(([x,y,a])=>`<path d="M${x},${y} Q${x-60},${y-40} ${x-110},${y+20} Q${x-50},${y-5} ${x},${y}Z" fill="#4c8f4f" stroke="${INK}" stroke-width="2.5" transform="rotate(${a},${x},${y})"/>`).join('')}
+  <path d="M120,0 q-10,90 14,160 M560,0 q14,70 -6,140 M860,0 q-12,110 10,190" stroke="#5e9a43" stroke-width="5" fill="none"/>
+  <path d="M0,${GY} Q240,${GY-6} 480,${GY} T960,${GY} L960,540 L0,540Z" fill="#6b5a3a" stroke="${INK}" stroke-width="3"/>
+  <path d="M0,505 Q300,492 480,505 T960,498" fill="none" stroke="#8a7650" stroke-width="12" stroke-linecap="round"/>`;
+const medal2=`<circle r="40" fill="#5fb3e0" stroke="${INK}" stroke-width="4"/><circle r="31" fill="#bfe9ff" stroke="#c9d6df" stroke-width="4"/>
+  <path d="M-24,4 q8,-10 16,0 t16,0 t16,0" fill="none" stroke="#2a6f9e" stroke-width="4" stroke-linecap="round"/><path d="M-20,16 q8,-8 16,0 t16,0 t12,0" fill="none" stroke="#2a6f9e" stroke-width="3" stroke-linecap="round"/>
+  <path d="M-8,-20 q8,-8 16,0 q-8,10 -16,0Z" fill="#fff" stroke="#2a6f9e" stroke-width="2"/>`;
+const goldMedal=`<circle r="40" fill="#f2c94c" stroke="${INK}" stroke-width="4"/><circle r="31" fill="none" stroke="#c99a1a" stroke-width="3"/><g transform="scale(1.4)">${emblem('#ffe680')}</g>`;
+const NPC={statue:{name:'Stone Guardian',color:'#6b6156'}};
+Object.assign(BG,{
+  sea:()=>seaBG(false),
+  seaSunset:()=>seaBG(true),
+  beach:()=>sky()+`<rect x="0" y="372" width="960" height="110" fill="#4fa9d9"/><line x1="0" y1="372" x2="960" y2="372" stroke="${INK}" stroke-width="3"/>`+seaWaves(388)+
+    `<path d="M0,${GY-8} Q240,${GY-22} 480,${GY-8} T960,${GY-10} L960,540 L0,540Z" fill="#f4e2b4" stroke="${INK}" stroke-width="3"/>`+
+    smallHull(70,GY-2,.42)+palmAt(900,GY,1.05,-1)+palmAt(800,GY,.85)+
+    `<g fill="#d9c08a">${[560,600,640,680,720,760].map((x,i)=>`<ellipse cx="${x}" cy="${i%2?492:504}" rx="9" ry="5"/>`).join('')}</g>
+     <path d="M780,470 q30,-10 60,4" stroke="#d9c08a" stroke-width="3" fill="none" stroke-dasharray="4 6"/>`,
+  jungle:()=>jungleBack(false)+
+    `<g id="stones" opacity="0">${[720,800,880].map(x=>`<g transform="translate(${x},492)"><ellipse rx="22" ry="9" fill="#9a958a" stroke="${INK}" stroke-width="2.5"/><path d="M-8,-1 L6,-1 M2,-5 L7,-1 L2,3" stroke="#8ff0ff" stroke-width="3" fill="none" stroke-linecap="round"/></g>`).join('')}</g>
+     <g id="curtain">${[700,760,820,880,940].map((x,i)=>`<path d="M${x},40 Q${x+30},${200+i*12} ${x},${380+i*10} Q${x-26},${210} ${x},40Z" fill="#3f7d42" stroke="${INK}" stroke-width="2.5"/>`).join('')}</g>`,
+  statue:()=>jungleBack(true)+stoneFace(),
+  grotto:()=>`<rect width="960" height="540" fill="#33475c"/>
+    <path d="M0,0 L960,0 L960,40 L880,40 L860,100 L840,40 L640,40 L622,90 L604,40 L330,40 L310,110 L290,40 L120,40 L104,80 L88,40 L0,40Z" fill="#26384a" stroke="${INK}" stroke-width="3"/>
+    ${[[80,300],[900,260],[180,180],[780,150]].map(([x,y])=>`<path d="M${x},${y} l10,-30 l10,30 l-10,10Z" fill="#8ff0ff" stroke="${INK}" stroke-width="2" opacity=".85"/>`).join('')}
+    <path d="M0,${GY} Q240,${GY-6} 480,${GY} T960,${GY} L960,540 L0,540Z" fill="#4c5b6b" stroke="${INK}" stroke-width="3"/>
+    <g><rect x="448" y="360" width="64" height="${GY-360}" fill="#8d8a84" stroke="${INK}" stroke-width="3"/><rect x="434" y="350" width="92" height="14" rx="3" fill="#a3a09a" stroke="${INK}" stroke-width="3"/>
+      <circle cx="480" cy="404" r="16" fill="#3a332c" stroke="${INK}" stroke-width="3"/><circle id="khGlow" cx="480" cy="404" r="22" fill="url(#glowG)" opacity="0"/></g>
+    <ellipse id="poolGlow" cx="700" cy="480" rx="170" ry="40" fill="#8ff0ff" opacity=".25"/>
+    <ellipse id="pool" cx="700" cy="480" rx="140" ry="24" fill="#5fc9f0" stroke="${INK}" stroke-width="3"/>`
+});
+
+const SCENES3=[
+ titleScene('Episode 3: The Island of Whispers','Last time, the Golden Medallion revealed three more glowing marks. The first one... a mysterious island, far out at sea!'),
+
+ {name:'2 · Setting Sail',dur:14.5,bg:'sea',
+  init(){uiL.innerHTML=`<g id="hull"><path d="M-190,-6 L190,-6 L150,48 L-150,48Z" fill="#c8743c" stroke="${INK}" stroke-width="4" stroke-linejoin="round"/><path d="M-176,12 L176,12" stroke="#8a4f22" stroke-width="5"/>
+     <text x="0" y="38" text-anchor="middle" font-family="Luckiest Guy" font-size="18" fill="#fbe6c2">THE EXPLORER</text></g>
+     <path d="M0,492 q30,-10 60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0 L960,540 L0,540Z" fill="#4fa9d9" opacity=".92"/>`},
+  update(t,dt){boatScene(t,dt,lerp(300,440,prog(t,0,14.5)),false);
+    const k=prog(t,0,14.5);id('isle').setAttribute('transform',`translate(${lerp(120,-20,k)},0) scale(1)`);
+    if(t>8.5&&t<11)CH.jothon.aL=110;
+    if(t>11.5)CH.johan.aL=80+Math.sin(t*3)*8;},
+  lines:[
+   {t:.6,who:'nar',text:'The four friends set sail across the deep blue sea...'},
+   {t:4,who:'julius',text:'Who needs oars when you\'ve got two shovels? Row, row, row!'},
+   {t:8.5,who:'jothon',text:'Look! An island... and it\'s covered in fog!'},
+   {t:11.5,who:'johan',text:'The Island of Whispers. We\'re almost there, team!'}],
+  events:[{t:4,f:'pop'}]},
+
+ {name:'3 · The Beach',dur:16,bg:'beach',
+  init(){uiL.innerHTML=`<g id="bottle" opacity="0"><rect x="-26" y="-9" width="44" height="18" rx="8" fill="#9be07a" fill-opacity=".8" stroke="${INK}" stroke-width="3"/><rect x="18" y="-5" width="12" height="10" fill="#b07a3c" stroke="${INK}" stroke-width="2"/><rect x="-14" y="-4" width="22" height="8" fill="#fff8e1"/></g>
+    <g id="note" opacity="0"><rect x="-210" y="-58" width="420" height="116" rx="10" fill="#fff8e1" stroke="${INK}" stroke-width="4"/>
+     <text y="-8" text-anchor="middle" font-family="Patrick Hand" font-size="30" fill="${INK}">Listen to the wind...</text><text y="32" text-anchor="middle" font-family="Patrick Hand" font-size="30" fill="${INK}">follow the whispers.</text></g>`},
+  update(t,dt){
+    show(...ORDER);
+    const P={asher:170,julius:285,jothon:400,johan:700};
+    ORDER.forEach((n,i)=>{const c=CH[n];walkTo(c,P[n]-560,P[n],t,i*.12,3+i*.12);c.flip=true});
+    const J=CH.johan;if(t>3.2&&t<6.4)J.aL=35+Math.sin(t*3)*8;
+    const Th=CH.jothon,b=id('bottle');
+    if(t>6.6&&t<8.6){Th.aL=18+Math.sin(t*20)*16;emit(dt,18,475,470,{color:'#f4e2b4',stroke:'#c9a874',g:-30,vx:[-60,70],vy:[-60,-20],r:[4,8],life:[.5,.9]})}
+    if(t<8.7){b.setAttribute('opacity',prog(t,6.8,8.4).toFixed(2));b.setAttribute('transform','translate(478,474) rotate(-12)')}
+    else{Th.aL=112;const [hx,hy]=handPos(Th,'L');b.setAttribute('opacity',1);b.setAttribute('transform',`translate(${hx.toFixed(1)},${(hy-8).toFixed(1)}) rotate(-70)`)}
+    const nt=id('note'),nk=ease(prog(t,10.2,10.9));nt.setAttribute('opacity',t>10.2&&t<13.8?1:0);nt.setAttribute('transform',`translate(480,150) scale(1,${nk.toFixed(2)})`);
+    if(t>8.7)ORDER.forEach((n,i)=>{if(n!=='jothon')jump(CH[n],t,8.8+i*.08,22,.4)});
+    if(t>10.5&&t<13.8){CH.asher.aL=60}
+    if(t>14){CH.julius.x+=Math.sin(T*40)*1.5}
+  },
+  lines:[
+   {t:3.2,who:'johan',text:'Footprints in the sand... but they just stop, right here!'},
+   {t:6.5,who:'jothon',text:'Wait... something\'s buried over here!'},
+   {t:8.9,who:'nar',text:'A message in a bottle!'},
+   {t:10.6,who:'asher',text:'It says... listen to the wind, and follow the whispers.'},
+   {t:14,who:'julius',text:'Uh... whispers? That sounds kind of spooky.'}],
+  events:[{t:8.7,f:'sparkle'},{t:10.2,f:'pop'}]},
+
+ {name:'4 · Whispering Jungle',dur:15.5,bg:'jungle',
+  init(){uiL.innerHTML=[['w0','this way...',260,120],['w1','shhhh...',620,90],['w2','follow us...',760,200]].map(([i,tx,x,y])=>`<text id="${i}" x="${x}" y="${y}" text-anchor="middle" font-family="Patrick Hand" font-style="italic" font-size="40" fill="#f2fff5" stroke="#16301b" stroke-width="5" paint-order="stroke" opacity="0">${tx}</text>`).join('')},
+  update(t,dt){
+    show(...ORDER);
+    const P={johan:560,jothon:430,julius:300,asher:170};
+    ORDER.forEach((n,i)=>{const c=CH[n];walkTo(c,P[n]-560,P[n],t,i*.15,4.5+i*.15);c.flip=true;
+      if(t>12.4)walkTo(c,P[n],P[n]+700,t,12.4+i*.1,15.4+i*.08)});
+    [['w0',1,4.2],['w1',2.8,6],['w2',8.6,11.8]].forEach(([k,a,b],i)=>{const e=id(k);const o=Math.min(prog(t,a,a+.6),1-prog(t,b-.6,b));
+      e.setAttribute('opacity',(o*(.8+.2*Math.sin(T*4+i))).toFixed(2));e.setAttribute('transform',`translate(${(Math.sin(T*1.5+i)*14).toFixed(1)},${(Math.sin(T*2+i)*6).toFixed(1)})`)});
+    emit(dt,6,-10,120+Math.random()*250,{color:'#e8fff0',g:0,vx:[260,380],vy:[-10,10],r:[1.5,3],life:[2.5,3.5]});
+    if(t>3&&t<6.4){CH.julius.x+=Math.sin(T*40)*2;CH.julius.aL=70;CH.julius.aR=-70}
+    const Th=CH.jothon;if(t>9.4&&t<11.6){Th.x=lerp(P.jothon,620,prog(t,9.4,10));Th.aL=40+Math.sin(t*14)*30}
+    const ck=ease(prog(t,10.2,11.4));id('curtain').setAttribute('transform',`translate(${(ck*260).toFixed(1)},${(-ck*120).toFixed(1)})`);id('stones').setAttribute('opacity',ck.toFixed(2));
+    if(t>11.6&&t<12.4)CH.johan.aL=100;
+  },
+  lines:[
+   {t:3,who:'julius',text:'Did... did you guys hear that? The trees are whispering!'},
+   {t:6.4,who:'asher',text:'Relax. It\'s just the wind blowing through hollow bamboo. Science!'},
+   {t:9.5,who:'jothon',text:'And look... the whispers lead this way!'},
+   {t:11.6,who:'johan',text:'Follow the whispers, team!'}],
+  events:[{t:3,f:'wow'},{t:10.3,f:'brush'},{t:10.5,f:'brush'},{t:11.2,f:'sparkle'}]},
+
+ {name:'5 · The Stone Guardian',dur:26.5,bg:'statue',
+  init(){uiL.innerHTML=[0,1,2,3].map(i=>`<text id="q${i}" text-anchor="middle" font-family="Luckiest Guy" font-size="40" fill="#ffd95a" stroke="${INK}" stroke-width="3" paint-order="stroke" opacity="0">?</text>`).join('')},
+  update(t,dt){
+    show(...ORDER);
+    const P={johan:430,jothon:315,julius:200,asher:85};
+    ORDER.forEach((n,i)=>{const c=CH[n];walkTo(c,P[n]-520,P[n],t,i*.12,3+i*.12);c.flip=true});
+    if(t>3.5&&t<5.6){CH.julius.x+=Math.sin(T*40)*2}
+    const talking=TALKER==='statue', eye=talking?(.7+.3*Math.sin(T*10)):t>5.6?.5:0;
+    id('seL').setAttribute('opacity',eye.toFixed(2));id('seR').setAttribute('opacity',eye.toFixed(2));
+    let m=1;if(talking)m=1+.6*Math.abs(Math.sin(T*9));
+    const ok=ease(prog(t,23.2,24.8));m=Math.max(m,lerp(1,3.4,ok));
+    id('smouth').setAttribute('transform',`translate(0,372) scale(1,${m.toFixed(2)}) translate(0,-372)`);id('stairs').setAttribute('opacity',ok.toFixed(2));
+    if(t>5.6&&t<6.4)ORDER.forEach((n,i)=>jump(CH[n],t,5.6+i*.05,28,.4));
+    if(t>5.6&&t<7)shake(2.5);if(t>23.2&&t<24.8)shake(3);
+    ORDER.forEach((n,i)=>{const q=id('q'+i),c=CH[n],qo=t>12.4&&t<15?1:0;q.setAttribute('opacity',qo);q.setAttribute('x',c.x);q.setAttribute('y',(GY-300+Math.sin(T*4+i)*6).toFixed(1));});
+    if(t>12.4&&t<15){CH.johan.aL=125}
+    if(t>15&&t<20.5){CH.johan.aL=95+Math.sin(t*4)*10}
+    if(t>24.8)ORDER.forEach((n,i)=>{jump(CH[n],t,24.9+i*.08,28,.45);CH[n].aL=85;CH[n].aR=-85});
+  },
+  lines:[
+   {t:.5,who:'nar',text:'Deep in the jungle stood a giant stone face...'},
+   {t:3.5,who:'julius',text:'Is it... is it looking at us?'},
+   {t:6,who:'statue',text:'Four friends... with four tools. Answer my riddle, and you may pass.'},
+   {t:10.5,who:'statue',text:'What has a mouth, but never speaks... and a bed, but never sleeps?'},
+   {t:15,who:'johan',text:'A mouth and a bed... just like the river we crossed! The answer is... a river!'},
+   {t:20.8,who:'statue',text:'Correct. You may enter.'}],
+  events:[{t:5.6,f:'rumble'},{t:23.2,f:'rumble'},{t:24.8,f:'jingle'}]},
+
+ {name:'6 · The Hidden Grotto',dur:21.5,bg:'grotto',
+  init(){uiL.innerHTML=`<g id="gm" opacity="0">${goldMedal}</g><g id="bm" opacity="0"><circle r="60" fill="url(#glowG)"/>${medal2}</g>
+    <rect id="beam3" x="535" y="0" width="50" height="230" fill="#fff8d0" opacity="0"/>
+    <g id="holo3" opacity="0" transform="translate(560,96)"><rect x="-130" y="-56" width="260" height="112" rx="12" fill="#7fe3ff" fill-opacity=".22" stroke="#7fe3ff" stroke-width="3"/>
+     <path d="M-100,30 q100,-30 200,0" stroke="#bff3ff" stroke-width="3" fill="none"/><path d="M-30,24 L0,-20 L30,24Z" fill="#f4e2b4" stroke="#bff3ff" stroke-width="2"/>
+     <g id="dx"><circle cx="0" cy="-30" r="12" fill="#fff3a0"/><path d="M-6,-36 L6,-24 M6,-36 L-6,-24" stroke="#d9483c" stroke-width="3.5"/></g>
+     <text y="50" text-anchor="middle" font-family="Luckiest Guy" font-size="18" fill="#e8fbff">DESERT OF ECHOES</text></g>`},
+  update(t,dt){
+    show(...ORDER);
+    const P={julius:130,jothon:245,johan:375,asher:875},F={julius:true,jothon:true,johan:true,asher:false};
+    ORDER.forEach(n=>{const c=CH[n];c.x=P[n];c.flip=F[n]});
+    const J=CH.johan;
+    if(t>3.5&&t<6.8)J.aL=50+Math.sin(t*3)*8;
+    const gm=id('gm');
+    if(t>6.8){J.aR=t<7.4?-80:0;const k=ease(prog(t,7.4,8.4));let x,y;
+      if(t<15.8){x=lerp(330,480,k);y=lerp(330,404,k)-Math.sin(Math.PI*k)*50}
+      else{const k2=ease(prog(t,15.8,17));x=lerp(480,520,k2);y=lerp(404,200,k2)}
+      gm.setAttribute('opacity',1);gm.setAttribute('transform',`translate(${x.toFixed(1)},${y.toFixed(1)}) scale(${t<15.8?lerp(.6,.36,k):lerp(.36,.6,prog(t,15.8,17))})`)}
+    id('khGlow').setAttribute('opacity',(prog(t,8.4,8.8)*(1-prog(t,15.8,16.2))).toFixed(2));
+    const dk=ease(prog(t,8.6,10.8));const pl=id('pool');pl.setAttribute('rx',(140*(1-dk*.85)).toFixed(1));pl.setAttribute('ry',(24*(1-dk*.8)).toFixed(1));
+    id('poolGlow').setAttribute('opacity',(.25+.3*dk).toFixed(2));
+    const bm=id('bm');
+    if(t>10.6){const k=ease(prog(t,10.8,12.6));let x=700,y=lerp(480,300,k)+Math.sin(T*2.5)*4;
+      if(t>15.8){const k2=ease(prog(t,15.8,17));x=lerp(700,600,k2);y=lerp(300,200,k2)}
+      const sp=Math.cos(prog(t,10.8,13.4)*4*Math.PI);
+      bm.setAttribute('opacity',1);bm.setAttribute('transform',`translate(${x.toFixed(1)},${y.toFixed(1)}) scale(${(.75*Math.max(.05,Math.abs(sp))).toFixed(3)},.75)`);
+      emit(dt,10,x+(Math.random()*80-40),y+(Math.random()*60-30),{color:'#bff3ff',stroke:'#5fb3e0',g:-30,vy:[-40,-10],r:[2,4],life:[.5,.9]})}
+    id('beam3').setAttribute('opacity',(prog(t,17,17.4)*(.4+.2*Math.sin(T*8))).toFixed(2));
+    id('holo3').setAttribute('opacity',prog(t,17.3,18).toFixed(2));
+    const dx=id('dx');if(dx)dx.setAttribute('transform',`translate(0,-30) scale(${(1+.2*Math.sin(T*5)).toFixed(3)}) translate(0,30)`);
+    if(t>10.8&&t<11.6)ORDER.forEach((n,i)=>jump(CH[n],t,10.9+i*.06,26,.4));
+    if(t>13&&t<16)CH.asher.aL=70;
+    if(t>17.8)ORDER.forEach((n,i)=>jump(CH[n],t,17.9+i*.07,30,.45));
+  },
+  lines:[
+   {t:.5,who:'jothon',text:'Whoa... an underground pool, glowing blue!'},
+   {t:3.5,who:'johan',text:'There\'s a keyhole on this stone... shaped exactly like our medallion!'},
+   {t:8.8,who:'nar',text:'The water drained away... and something shiny rose from the bottom!'},
+   {t:13,who:'asher',text:'Silver and sea glass... this must be the Ocean Medallion!'},
+   {t:18,who:'johan',text:'Look! The next mark is glowing... the Desert of Echoes!'}],
+  events:[{t:8.4,f:'click'},{t:8.6,f:'bubble'},{t:9,f:'bubble'},{t:9.4,f:'bubble'},{t:10.8,f:'sparkle'},{t:17,f:'jingle'}]},
+
+ {name:'7 · Sailing Home',dur:16.5,bg:'seaSunset',
+  init(){SCENES3[1].init();uiL.insertAdjacentHTML('beforeend',popText('tbc','TO BE CONTINUED...',480,130,58,'#e4574b'))},
+  update(t,dt){boatScene(t,dt,lerp(470,330,prog(t,0,16.5)),true);
+    id('isle').setAttribute('transform',`translate(${lerp(0,90,prog(t,0,16.5))},0)`);
+    [...document.querySelectorAll('.star')].forEach((s,i)=>s.setAttribute('opacity',(prog(t,1+i*.3,2+i*.3)*(.6+.4*Math.sin(T*3+i))).toFixed(2)));
+    if(t>4.6&&t<7)CH.julius.aL=110;
+    if(t>10.5&&t<14.5)CH.johan.aL=100+Math.sin(t*3)*8;
+    const tb=id('tbc'),tk=prog(t,14.6,15.4);tb.setAttribute('opacity',t>14.6?1:0);scaleAt(tb,elastic(tk),480,110);
+    if(t>14.6)ORDER.forEach(n=>{CH[n].aL=85;CH[n].aR=-85});
+  },
+  lines:[
+   {t:.5,who:'nar',text:'With two medallions in hand, the friends sailed home under the evening stars.'},
+   {t:4.6,who:'julius',text:'Two medallions down... two more to go!'},
+   {t:7.4,who:'asher',text:'I wonder what secrets the Desert of Echoes is hiding...'},
+   {t:10.5,who:'johan',text:'Whatever it is, we\'ll find it together. Team Archaeologists, forever!'}],
+  events:[{t:14.6,f:'jingle'}]}
+];
+/* end SCENES3 */
+/* ===================== EPISODE 4 ===================== */
+NPC.echo={name:'Mysterious Echo',color:'#8a5ac8'};
+const cactus=(x,s=1)=>`<g transform="translate(${x},${GY}) scale(${s})"><path d="M-10,0 L-10,-90 Q0,-104 10,-90 L10,0Z" fill="#6cc070" stroke="${INK}" stroke-width="3"/>
+  <path d="M-10,-48 L-26,-48 Q-32,-48 -32,-56 L-32,-74 Q-26,-82 -20,-74 L-20,-60 L-10,-60" fill="#6cc070" stroke="${INK}" stroke-width="3"/>
+  <path d="M10,-38 L24,-38 Q30,-38 30,-46 L30,-62 Q24,-70 18,-62 L18,-50 L10,-50" fill="#6cc070" stroke="${INK}" stroke-width="3"/></g>`;
+const dunes=(c1,c2)=>`<path d="M0,400 Q160,330 330,392 Q520,320 700,388 Q840,340 960,380 L960,${GY} L0,${GY}Z" fill="${c1}" stroke="${INK}" stroke-width="3"/>
+  <path d="M0,${GY} Q240,${GY-14} 480,${GY} T960,${GY} L960,540 L0,540Z" fill="${c2}" stroke="${INK}" stroke-width="3"/>
+  <path d="M80,505 q40,-8 80,0 M420,520 q50,-10 100,0 M760,500 q40,-8 80,0" stroke="#c89a4a" stroke-width="3" fill="none"/>`;
+const pyramidShape=(x,y,s)=>`<g transform="translate(${x},${y}) scale(${s})"><path d="M-250,0 L0,-300 L250,0Z" fill="#e6c27a" stroke="${INK}" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M0,-300 L60,0" stroke="#c9a058" stroke-width="3"/>${[-240,-180,-120,-60].map(d=>`<line x1="${(d*250/300).toFixed(0)}" y1="${d+300-300}" x2="${(-d*250/300).toFixed(0)}" y2="${d}" stroke="#c9a058" stroke-width="2.5"/>`).join('')}</g>`;
+const sunMedal=`<g>${Array.from({length:12},(_,i)=>`<path d="M-7,-38 L0,-54 L7,-38Z" fill="#ff9a3c" stroke="${INK}" stroke-width="2" transform="rotate(${i*30})"/>`).join('')}
+  <circle r="40" fill="#ff8a2c" stroke="${INK}" stroke-width="4"/><circle r="28" fill="#ffd95a" stroke="#c9601c" stroke-width="3"/>
+  <circle cx="-9" cy="-4" r="3.5" fill="${INK}"/><circle cx="9" cy="-4" r="3.5" fill="${INK}"/><path d="M-10,8 Q0,17 10,8" fill="none" stroke="${INK}" stroke-width="3" stroke-linecap="round"/></g>`;
+Object.assign(BG,{
+  dunes:()=>`<defs><linearGradient id="hotG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd27a"/><stop offset="1" stop-color="#fff2cf"/></linearGradient></defs>`+
+    sky('hotG','#ffcf3a')+dunes('#f0c97a','#f6d998')+cactus(120,.9)+cactus(870,1.1)+
+    `<g opacity=".5" fill="none" stroke="#fff" stroke-width="2"><path d="M300,330 q10,-6 20,0 t20,0"/><path d="M600,310 q10,-6 20,0 t20,0"/></g>`,
+  storm:()=>`<defs><linearGradient id="hotG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd27a"/><stop offset="1" stop-color="#fff2cf"/></linearGradient></defs>`+
+    sky('hotG','#ffcf3a')+`<g id="ptip" opacity="0">${pyramidShape(830,402,.42)}</g>`+dunes('#f0c97a','#f6d998')+
+    `<path d="M600,${GY} Q590,370 660,350 Q760,330 800,380 Q840,430 830,${GY}Z" fill="#c98f5a" stroke="${INK}" stroke-width="3"/><path d="M650,390 l14,10 M760,420 l12,-8" stroke="${INK}" stroke-width="2.5"/>`,
+  canyon:()=>`<defs><linearGradient id="hotG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd27a"/><stop offset="1" stop-color="#fff2cf"/></linearGradient></defs>`+
+    sky('hotG','#ffcf3a')+
+    `<path d="M0,0 L250,0 L230,90 L270,170 L235,260 L280,360 L260,${GY} L0,${GY}Z" fill="#c8643c" stroke="${INK}" stroke-width="4" stroke-linejoin="round"/>
+     <path d="M960,0 L720,0 L745,100 L700,180 L740,280 L690,370 L715,${GY} L960,${GY}Z" fill="#b8562f" stroke="${INK}" stroke-width="4" stroke-linejoin="round"/>
+     <path d="M20,120 l140,0 M40,240 l170,0 M30,380 l200,0 M760,140 l180,0 M740,260 l200,0 M730,400 l210,0" stroke="#9c4626" stroke-width="4"/>
+     <path d="M0,${GY} Q240,${GY-8} 480,${GY} T960,${GY} L960,540 L0,540Z" fill="#e2a86a" stroke="${INK}" stroke-width="3"/>`,
+  pyramid:()=>`<defs><linearGradient id="hotG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd27a"/><stop offset="1" stop-color="#fff2cf"/></linearGradient></defs>`+
+    sky('hotG','#ffcf3a')+pyramidShape(480,GY,1.2)+
+    `<rect x="410" y="300" width="140" height="170" fill="#7a5a32" stroke="${INK}" stroke-width="4"/>
+     <g id="pdoor"><rect x="410" y="300" width="140" height="170" fill="#c9a058" stroke="${INK}" stroke-width="4"/><g transform="translate(480,332) scale(1.1)">${emblem('#ffe680')}</g>
+      ${[0,1,2,3].map(i=>{const x=429+i*34;return `<circle cx="${x}" cy="${410-i*10}" r="13" fill="#8a7e70" stroke="${INK}" stroke-width="3"/><circle id="st${i}" cx="${x}" cy="${410-i*10}" r="13" fill="#8ff0ff" opacity="0"/>`}).join('')}</g>
+     <path d="M0,${GY} Q240,${GY-10} 480,${GY} T960,${GY} L960,540 L0,540Z" fill="#f6d998" stroke="${INK}" stroke-width="3"/>
+     <path id="sandpile" d="M370,${GY+2} Q480,300 590,${GY+2}Z" fill="#f0c97a" stroke="${INK}" stroke-width="3"/>`,
+  sunroom:()=>`<rect width="960" height="540" fill="#a8824e"/>
+    ${[90,180,270,360].map(y=>`<line x1="0" y1="${y}" x2="960" y2="${y}" stroke="#8d6a3c" stroke-width="3"/>`).join('')}
+    ${[[120,90],[300,180],[520,90],[700,180],[860,270],[60,270],[420,270]].map(([x,y])=>`<line x1="${x}" y1="${y-90}" x2="${x}" y2="${y}" stroke="#8d6a3c" stroke-width="3"/>`).join('')}
+    <rect x="205" y="0" width="50" height="16" fill="#fff8d0" stroke="${INK}" stroke-width="3"/>
+    <path d="M0,${GY} Q240,${GY-6} 480,${GY} T960,${GY} L960,540 L0,540Z" fill="#c9a058" stroke="${INK}" stroke-width="3"/>
+    <g fill="#fff3a0"><polygon id="b0" points="214,16 246,16 238,318 222,318" opacity=".55"/>
+     <polygon id="b1" points="238,312 238,328 770,326 770,314" opacity="0"/>
+     <polygon id="b2" points="770,314 770,328 492,384 470,374" opacity="0"/></g>
+    <g transform="translate(230,${GY})"><rect x="-4" y="-150" width="8" height="150" fill="#7a4b23" stroke="${INK}" stroke-width="2"/><g transform="translate(0,-150) rotate(35)"><rect x="-26" y="-6" width="52" height="12" rx="3" fill="#cfe8ff" stroke="${INK}" stroke-width="3"/><rect id="dustA" x="-26" y="-6" width="52" height="12" rx="3" fill="#a08660"/></g></g>
+    <g transform="translate(780,${GY})"><rect x="-4" y="-150" width="8" height="150" fill="#7a4b23" stroke="${INK}" stroke-width="2"/><g id="mirB" transform="translate(0,-150) rotate(-10)"><rect x="-26" y="-6" width="52" height="12" rx="3" fill="#cfe8ff" stroke="${INK}" stroke-width="3"/></g></g>
+    <g><rect x="450" y="386" width="60" height="${GY-386}" fill="#8d6a3c" stroke="${INK}" stroke-width="3"/><rect x="436" y="374" width="88" height="14" rx="3" fill="#a07a48" stroke="${INK}" stroke-width="3"/><circle id="pedGlow" cx="480" cy="370" r="44" fill="url(#glowG)" opacity="0"/></g>`,
+  night:()=>`<defs><linearGradient id="nightG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1c2a52"/><stop offset="1" stop-color="#4a4e7a"/></linearGradient></defs>
+    <rect width="960" height="540" fill="url(#nightG)"/>
+    <g id="stars">${Array.from({length:26},(_,i)=>`<circle class="star" cx="${(i*137)%940+10}" cy="${(i*71)%300+15}" r="${i%3?2.5:3.5}" fill="#fff8d0"/>`).join('')}</g>
+    <circle cx="840" cy="80" r="44" fill="#fff4c4" stroke="${INK}" stroke-width="3"/><circle cx="824" cy="70" r="7" fill="#e8dca8"/><circle cx="852" cy="96" r="5" fill="#e8dca8"/>
+    ${pyramidShape(150,402,.38)}`+dunes('#a88a5c','#c2a06a')+
+    `<g transform="translate(480,${GY})"><line x1="-34" y1="-2" x2="34" y2="-14" stroke="#7a4b23" stroke-width="10" stroke-linecap="round"/><line x1="-34" y1="-14" x2="34" y2="-2" stroke="#7a4b23" stroke-width="10" stroke-linecap="round"/>
+     <circle cy="-30" r="90" fill="url(#glowG)" opacity=".7"/>
+     <g id="flames"><path d="M-24,-12 Q-28,-54 -4,-78 Q-6,-52 8,-48 Q4,-66 16,-84 Q32,-50 24,-12Z" fill="#f28b2c" stroke="${INK}" stroke-width="2.5"/><path d="M-10,-12 Q-12,-36 0,-50 Q4,-34 12,-32 Q14,-22 10,-12Z" fill="#ffd95a"/></g></g>`
+});
+Object.assign(SFX,{
+  n0(){tone(392,.6,'triangle',.14)},n1(){tone(494,.6,'triangle',.14)},n2(){tone(587,.6,'triangle',.14)},n3(){tone(784,.7,'triangle',.14)},
+  wind(){tone(300,1.6,'sawtooth',.02,120)}
+});
+const notePart=(x,y,c)=>spawn(x,y,{n:3,color:c,stroke:INK,g:-60,vx:[-40,40],vy:[-80,-40],r:[4,7],life:[.8,1.2]});
+
+const SCENES4=[
+ titleScene('Episode 4: The Desert of Echoes','Last time, our heroes found the Ocean Medallion on the Island of Whispers. Now, the map leads them into a scorching desert...'),
+
+ {name:'2 · The Dunes',dur:15.5,bg:'dunes',
+  init(){uiL.innerHTML=`<g id="wall" opacity="0"><path d="M960,540 L960,120 Q900,90 860,150 Q820,80 770,160 Q730,120 700,200 Q680,300 700,540Z" fill="#d9a85a" fill-opacity=".85" stroke="${INK}" stroke-width="3"/></g>`},
+  update(t,dt){
+    show(...ORDER);
+    const P={johan:560,jothon:430,julius:300,asher:170};
+    ORDER.forEach((n,i)=>{const c=CH[n];walkTo(c,P[n]-560,P[n],t,i*.2,9+i*.2);c.flip=true;
+      if(t<9.4){c.leg*=.6;c.bob*=.5}
+      if(Math.random()<dt*1.2)spawn(c.x+(Math.random()*30-15),GY-250*c.s,{color:'#8fd3ff',stroke:'#3a94c0',g:300,vx:[-20,20],vy:[-40,-10],r:[3,5],life:[.5,.7]})});
+    if(t>4&&t<7)CH.julius.aL=CH.julius.aR=0;
+    if(t>7&&t<10.4){CH.asher.aL=100}
+    const w=id('wall'),wk=prog(t,10.4,15.5);w.setAttribute('opacity',(wk*1).toFixed(2));w.setAttribute('transform',`translate(${(lerp(260,0,wk)).toFixed(1)},0)`);
+    if(t>10.6){CH.johan.aL=95;CH.johan.flip=true}
+  },
+  lines:[
+   {t:.5,who:'nar',text:'The sun blazed down on the endless golden sand...'},
+   {t:4,who:'julius',text:'So... hot... I think my shovels are melting!'},
+   {t:7,who:'asher',text:'Drink some water, everyone. Staying hydrated is pure science!'},
+   {t:10.6,who:'johan',text:'Wait... the wind is picking up. Look over there!'}],
+  events:[{t:10.4,f:'wind'},{t:12.5,f:'wind'}]},
+
+ {name:'3 · Sandstorm!',dur:16.5,bg:'storm',
+  init(){uiL.innerHTML=`<rect id="sand" width="960" height="540" fill="#d9a85a" opacity="0"/>`},
+  update(t,dt){
+    show(...ORDER);
+    const P={johan:540,jothon:420,julius:300,asher:180};
+    ORDER.forEach((n,i)=>{const c=CH[n];walkTo(c,P[n]-300,P[n],t,.2,2.6);c.flip=true;
+      if(t>2.6&&t<9.2){c.aL=120;c.aR=-60;c.bob=Math.sin(T*20+i)*1.5;c.x+=Math.sin(T*30+i)*1.2}});
+    const so=prog(t,0,2)*.55*(1-prog(t,8.2,9.6));id('sand').setAttribute('opacity',(so+.06*Math.sin(T*7)*(so>0)).toFixed(2));
+    if(t<9.4)emit(dt,90,980,Math.random()*480,{color:'#c88a3c',g:0,vx:[-900,-600],vy:[-30,30],r:[1.5,3.5],life:[1.2,1.6]});
+    if(t<9)shake(1.5);
+    id('ptip').setAttribute('opacity',prog(t,9.2,10.4).toFixed(2));
+    if(t>9.5&&t<13){CH.johan.aL=60+Math.sin(t*3)*8;CH.johan.flip=true}
+    if(t>13)ORDER.forEach((n,i)=>jump(CH[n],t,13.1+i*.08,28,.45));
+  },
+  lines:[
+   {t:.5,who:'jothon',text:'Sandstorm! Everyone, get behind the big rock!'},
+   {t:4.5,who:'nar',text:'The wind howled, and the sand swirled all around them...'},
+   {t:9.6,who:'johan',text:'The storm blew the sand away... and look! A pyramid!'},
+   {t:13.1,who:'julius',text:'Whoa! It was buried there this whole time!'}],
+  events:[{t:0,f:'wind'},{t:1.5,f:'wind'},{t:3,f:'wind'},{t:4.5,f:'wind'},{t:6,f:'wind'},{t:7.5,f:'wind'},{t:10.3,f:'sparkle'}]},
+
+ {name:'4 · Echo Canyon',dur:17.5,bg:'canyon',
+  init(){uiL.innerHTML=[['e0','...there?',360,170],['e1','...there?',620,130],['e2','...there?',480,90]].map(([i,tx,x,y])=>`<text id="${i}" x="${x}" y="${y}" text-anchor="middle" font-family="Patrick Hand" font-size="36" fill="#fff" stroke="#8a5ac8" stroke-width="5" paint-order="stroke" opacity="0">${tx}</text>`).join('')+
+    `<g id="swirl" opacity="0">${[0,1,2].map(i=>`<circle cx="480" cy="200" r="${30+i*26}" fill="none" stroke="#c8a2ff" stroke-width="4" stroke-dasharray="10 12"/>`).join('')}</g>`},
+  update(t,dt){
+    show(...ORDER);
+    const P={johan:520,jothon:420,julius:330,asher:430};
+    const PP={johan:540,jothon:430,julius:330,asher:225};
+    ORDER.forEach((n,i)=>{const c=CH[n];walkTo(c,PP[n]-560,PP[n],t,i*.15,2.8+i*.15);c.flip=true});
+    const J=CH.johan;if(t>3&&t<6.5){J.aL=150;J.aR=-150;J.flip=false}
+    [['e0',5.5],['e1',6.3],['e2',7.1]].forEach(([k,a],i)=>{const e=id(k);e.setAttribute('opacity',(Math.min(prog(t,a,a+.3),1-prog(t,a+1.2,a+2))*(1-i*.2)).toFixed(2))});
+    const sw=id('swirl'),so=t>8&&t<13?Math.min(prog(t,8,8.6),1-prog(t,12.4,13)):0;sw.setAttribute('opacity',(so*.8).toFixed(2));sw.setAttribute('transform',`rotate(${(T*40).toFixed(1)},480,200)`);
+    if(t>8&&t<13)ORDER.forEach((n,i)=>{CH[n].x+=Math.sin(T*35+i)*1.3});
+    if(t>8.2&&t<8.8)ORDER.forEach((n,i)=>jump(CH[n],t,8.2+i*.05,24,.4));
+    if(t>13.2&&t<16)CH.asher.aL=80+Math.sin(t*4)*20;
+  },
+  lines:[
+   {t:3,who:'johan',text:'Hellooo! Is anybody there?',echo:1},
+   {t:8.2,who:'echo',text:'Sing the song of the stones... and the door will open.',echo:1},
+   {t:13.2,who:'asher',text:'An echo that talks back? That is NOT very scientific!'}],
+  events:[]},
+
+ {name:'5 · Singing Stones',dur:23.5,bg:'pyramid',
+  update(t,dt){
+    show(...ORDER);
+    const P={jothon:130,johan:250,julius:720,asher:835},F={jothon:true,johan:true,julius:false,asher:false};
+    ORDER.forEach(n=>{CH[n].x=P[n];CH[n].flip=F[n]});
+    const Ju=CH.julius;
+    if(t<5.2){Ju.x=lerp(640,610,0);Ju.x=640;Ju.flip=false;const a=Math.sin(t*9);Ju.aL=35+a*40;Ju.aR=-(15-a*30);Ju.bob=-Math.abs(a)*4;
+      emit(dt,26,560,450,{vx:[60,240],vy:[-320,-150],color:Math.random()<.5?'#f0c97a':'#e2a86a',r:[3,7]})}
+    else Ju.x=lerp(640,720,prog(t,5.2,6));
+    const sp=id('sandpile');sp.setAttribute('transform',`translate(480,${GY}) scale(${(1-prog(t,.8,5)).toFixed(3)},${(1-prog(t,.8,5)).toFixed(3)}) translate(-480,-${GY})`);
+    const SH=[9,9.7,10.4,11.1],ST=[17.2,17.9,18.6,19.3],who=['johan','jothon','julius','asher'];
+    for(let i=0;i<4;i++){const s=id('st'+i);let o=0;
+      if(t>SH[i]&&t<SH[i]+.6)o=1-prog(t,SH[i],SH[i]+.6);
+      if(t>ST[i])o=Math.max(o,.85);
+      s.setAttribute('opacity',o.toFixed(2));
+      const c=CH[who[i]];if(t>ST[i]-.4&&t<ST[i]+.6){c.aL=100;jump(c,t,ST[i]-.4,26,.4)}
+      if(t>=ST[i]&&t-dt<ST[i]&&dt>0)notePart(429+i*34,400-i*10,['#ff6b6b','#5b95e8','#5cbb78','#f2c94c'][i]);
+      if(t>=SH[i]&&t-dt<SH[i]&&dt>0)notePart(429+i*34,400-i*10,'#c8a2ff')}
+    const dk=ease(prog(t,20,22));id('pdoor').setAttribute('transform',`translate(0,${(dk*175).toFixed(1)})`);
+    if(t>20&&t<22)shake(2.5);
+    if(t>22)ORDER.forEach((n,i)=>jump(CH[n],t,22.1+i*.07,28,.45));
+  },
+  lines:[
+   {t:.4,who:'julius',text:'Leave the digging to me! Hup, hup, hup!'},
+   {t:5.6,who:'nar',text:'Under the sand was a door... with four singing stones.'},
+   {t:11.9,who:'asher',text:'It\'s a pattern! Low, middle, high, and highest. Everyone, tap your stone in order!'},
+   {t:20.2,who:'nar',text:'The melody echoed... and the great door sank into the sand!'}],
+  events:[...Array.from({length:7},(_,i)=>({t:.9+i*.6,f:'thud'})),{t:9,f:'n0'},{t:9.7,f:'n1'},{t:10.4,f:'n2'},{t:11.1,f:'n3'},
+    {t:17.2,f:'n0'},{t:17.9,f:'n1'},{t:18.6,f:'n2'},{t:19.3,f:'n3'},{t:20,f:'rumble'},{t:22,f:'jingle'}]},
+
+ {name:'6 · Room of Sunlight',dur:23.5,bg:'sunroom',
+  init(){uiL.innerHTML=`<g id="sm" opacity="0"><circle r="70" fill="url(#glowG)"/>${sunMedal}</g>
+    <g id="trio" opacity="0"><g transform="translate(-90,0) scale(.5)">${goldMedal}</g><g transform="scale(.5)">${medal2}</g><g transform="translate(90,0) scale(.5)">${sunMedal}</g></g>
+    <g id="holo4" opacity="0" transform="translate(480,150)"><rect x="-130" y="-56" width="260" height="112" rx="12" fill="#7fe3ff" fill-opacity=".22" stroke="#7fe3ff" stroke-width="3"/>
+     <path d="M-60,30 L0,-30 L60,30Z" fill="#eef8ff" stroke="#bff3ff" stroke-width="2"/><path d="M-20,-10 L0,-30 L20,-10 L10,-4 L0,-14 L-10,-4Z" fill="#fff" />
+     <g id="fx4"><circle cx="0" cy="-36" r="11" fill="#fff3a0"/><path d="M-6,-42 L6,-30 M6,-42 L-6,-30" stroke="#d9483c" stroke-width="3.5"/></g>
+     <text y="50" text-anchor="middle" font-family="Luckiest Guy" font-size="18" fill="#e8fbff">THE FROZEN PEAK</text></g>`},
+  update(t,dt){
+    show(...ORDER);
+    const P={jothon:150,johan:355,asher:605,julius:690},F={jothon:true,johan:true,asher:false,julius:false};
+    ORDER.forEach(n=>{CH[n].x=P[n];CH[n].flip=F[n];CH[n].s=.8});
+    if(t<3.6)CH.johan.aL=60;
+    const Th=CH.jothon;if(t>4.4&&t<7.2){Th.aL=90+Math.sin(t*20)*18;emit(dt,18,232,322,{color:'#c9a874',g:-20,vx:[-40,60],vy:[-50,-10],r:[3,6],life:[.5,.9]})}
+    id('dustA').setAttribute('opacity',(1-prog(t,4.6,7)).toFixed(2));
+    id('b1').setAttribute('opacity',(prog(t,7,7.4)*.7).toFixed(2));
+    const Ju=CH.julius;if(t>9.4&&t<11.2){Ju.aL=60+Math.sin(t*6)*15;Ju.aR=-40}
+    id('mirB').setAttribute('transform',`translate(0,-150) rotate(${lerp(-10,32,ease(prog(t,9.6,11))).toFixed(1)})`);
+    id('b2').setAttribute('opacity',(prog(t,11,11.4)*.7).toFixed(2));
+    id('pedGlow').setAttribute('opacity',prog(t,11.2,11.8).toFixed(2));
+    const sm=id('sm');if(t>11.6){const k=ease(prog(t,11.8,13.8)),sp=Math.cos(prog(t,11.8,14.2)*4*Math.PI);
+      sm.setAttribute('opacity',(1-prog(t,18,18.4)).toFixed(2));sm.setAttribute('transform',`translate(480,${(lerp(370,240,k)+Math.sin(T*2.5)*4).toFixed(1)}) scale(${(.85*Math.max(.05,Math.abs(sp))).toFixed(3)},.85)`);
+      emit(dt,10,480+(Math.random()*90-45),240+(Math.random()*70-35),{color:'#ffd95a',stroke:'#ff8a2c',g:-30,vy:[-40,-10],r:[2,4],life:[.5,.9]})}
+    const tr=id('trio');tr.setAttribute('opacity',prog(t,18,18.4).toFixed(2));tr.setAttribute('transform',`translate(480,${(lerp(240,58,ease(prog(t,18.2,19.2)))).toFixed(1)})`);
+    id('holo4').setAttribute('opacity',prog(t,19.2,19.9).toFixed(2));
+    const fx=id('fx4');if(fx)fx.setAttribute('transform',`translate(0,-36) scale(${(1+.2*Math.sin(T*5)).toFixed(3)}) translate(0,36)`);
+    if(t>11.8&&t<12.6)ORDER.forEach((n,i)=>jump(CH[n],t,11.9+i*.06,26,.4));
+    if(t>14.6&&t<17.6)CH.asher.aL=80;
+    if(t>19.9)ORDER.forEach((n,i)=>jump(CH[n],t,20+i*.07,30,.45));
+  },
+  lines:[
+   {t:.5,who:'johan',text:'A beam of sunlight... but it stops at this dusty old mirror.'},
+   {t:4.2,who:'jothon',text:'Dusty? That\'s my job!'},
+   {t:7.8,who:'julius',text:'This other mirror is crooked. I\'ll turn it with my shovel!'},
+   {t:14.6,who:'asher',text:'The Sun Medallion! It\'s warm... like it\'s full of sunshine!'},
+   {t:20,who:'johan',text:'Three medallions... and the last mark points to the Frozen Peak!'}],
+  events:[{t:4.6,f:'brush'},{t:5.2,f:'brush'},{t:5.8,f:'brush'},{t:7,f:'sparkle'},{t:11,f:'click'},{t:11.8,f:'sparkle'},{t:18.2,f:'jingle'}]},
+
+ {name:'7 · Desert Night',dur:18.5,bg:'night',
+  init(){uiL.innerHTML=popText('tbc','TO BE CONTINUED...',480,130,58,'#e4574b')},
+  update(t,dt){
+    show(...ORDER);
+    const P={jothon:200,johan:330,julius:635,asher:765},F={jothon:true,johan:true,julius:false,asher:false};
+    ORDER.forEach(n=>{CH[n].x=P[n];CH[n].flip=F[n]});
+    [...document.querySelectorAll('.star')].forEach((s,i)=>s.setAttribute('opacity',(.5+.5*Math.sin(T*2+i*1.7)).toFixed(2)));
+    emit(dt,6,480+(Math.random()*30-15),GY-70,{color:'#ffb347',g:-60,vx:[-15,15],vy:[-60,-30],r:[1.5,3],life:[.8,1.3]});
+    if(t>8&&t<10.4){CH.julius.aL=110;jump(CH.julius,t,8.1,24,.4)}
+    if(t>10.6&&t<16)CH.johan.aL=90+Math.sin(t*3)*8;
+    const tb=id('tbc'),tk=prog(t,16.6,17.4);tb.setAttribute('opacity',t>16.6?1:0);scaleAt(tb,elastic(tk),480,110);
+    if(t>16.6)ORDER.forEach((n,i)=>{jump(CH[n],t,16.7+i*.1,30,.45);CH[n].aL=85;CH[n].aR=-85});
+  },
+  lines:[
+   {t:.5,who:'nar',text:'That night, the four friends camped under a sky full of stars.'},
+   {t:4.6,who:'jothon',text:'Three medallions... I can\'t believe how far we\'ve come.'},
+   {t:8,who:'julius',text:'And only one more to go!'},
+   {t:10.6,who:'johan',text:'The Frozen Peak... it\'ll be our biggest adventure yet. Get some sleep, team!'}],
+  events:[{t:16.6,f:'jingle'}]}
+];
+/* end SCENES4 */
+
+function boatScene(t,dt,bx,leaving){
+  show(...ORDER);
+  const by=450+Math.sin(T*2)*5,rot=Math.sin(T*1.6)*2.5;
+  id('hull').setAttribute('transform',`translate(${bx.toFixed(1)},${by.toFixed(1)}) rotate(${rot.toFixed(2)})`);
+  const OFF=leaving?{johan:-120,julius:-40,jothon:40,asher:120}:{asher:-120,jothon:-40,julius:40,johan:120};
+  ORDER.forEach((n,i)=>{const c=CH[n];c.s=.72;c.x=bx+OFF[n];c.y=by-GY-2+Math.sin(T*2+i)*1;c.flip=!leaving;c.bob=0});
+  const Ju=CH.julius,a=Math.sin(T*4);Ju.aL=30+a*40;Ju.aR=-(30-a*40);
+  if(a>.9)emit(dt,30,Ju.x+(leaving?-70:70),by+20,{color:'#bfe9ff',stroke:'#3a94c0',vx:[-40,40],vy:[-160,-60],r:[3,6],life:[.5,.8]});
+  CH.johan.aL=CH.johan.aL||60;
+  const g=id('gulls');if(g)g.setAttribute('transform',`translate(${((T*40)%1100-80).toFixed(1)},${(90+Math.sin(T*2)*10).toFixed(1)})`);
+}
+
+
+const EPISODES=[
+ {n:1,title:'Episode 1: The Secret of the Golden Medallion',scenes:SCENES1,pre:'s',syn:'On their travels, Johan spots a strange symbol on a rock — the same logo the team wears on their shirts! Julius digs and hits an old stone box. Thor carefully cleans it and finds a golden key in his sieve. Asher tests it in his lab: the box is a thousand years old. When they open it, out rises a Golden Medallion — with a map on the back leading to Cloud Mountain. <i>To be continued…</i>'},
+ {n:2,title:'Episode 2: The Door of Four Tools',scenes:SCENES2,pre:'e2_s',syn:"Following the medallion's map, the team reaches a rushing river. Julius digs out a tree so it falls into a bridge. Inside the pitch-dark cave, Asher mixes a glowing potion that reveals ancient drawings of four explorers. At the Door of Four Tools, each friend raises their tool and the door rumbles open. In the hall beyond, the medallion fits a pedestal and projects a map with three more glowing marks — three more medallions to find! The cave starts to collapse, they escape at sunset, and Johan announces the next stop: the Island of Whispers. <i>To be continued…</i>"},
+ {n:3,title:'Episode 3: The Island of Whispers',scenes:SCENES3,pre:'e3_s',syn:'The friends sail to the foggy Island of Whispers, with Julius rowing using his two shovels. On the beach, Thor digs up a message in a bottle: “Listen to the wind… follow the whispers.” In the whispering jungle, Thor brushes aside the leaves to reveal a hidden path, which leads to a giant Stone Guardian with a riddle: what has a mouth but never speaks, and a bed but never sleeps? Johan answers “a river!”, and the statue opens its mouth to reveal a secret grotto. The Golden Medallion unlocks the pool, and the blue Ocean Medallion rises from the water, pointing to the next mark: the Desert of Echoes. <i>To be continued…</i>'},
+ {n:4,title:'Episode 4: The Desert of Echoes',scenes:SCENES4,pre:'e4_s',syn:'Under a blazing sun, the team crosses the desert — until a sandstorm forces them behind a giant rock. When it clears, the wind has uncovered a buried pyramid! In Echo Canyon, Johan shouts “Is anybody there?” and a mysterious echo answers: “Sing the song of the stones, and the door will open.” Julius digs out the pyramid door, which has four singing stones. Asher works out the musical pattern, and each friend taps a stone in order to open it. Inside, Thor dusts off a mirror and Julius turns another with his shovel to guide a sunbeam onto a pedestal. The fiery Sun Medallion rises, and all three medallions point to the final mark: the Frozen Peak. <i>To be continued…</i>'}];
+EPISODES.forEach(ep=>ep.scenes.forEach((sc,si)=>sc.lines.forEach((l,li)=>{const k=ep.pre+si+'_'+li;l.vo=`vo/${k}.mp3`;l.dur=VODUR[k]||l.text.length/14})));
+/* ---------- player ---------- */
+let EP=EPISODES[1],SCENES=EP.scenes,TOTAL=0;
+let si=0, st=0, T=0, playing=false, prevT=0, sc=SCENES[0];
+const chipsEl=$('#chips'),epsEl=$('#eps');
+EPISODES.forEach(ep=>{const b=document.createElement('button');b.textContent='Episode '+ep.n;b.onclick=()=>{setEpisode(ep.n);goScene(0);play()};epsEl.appendChild(b)});
+function setEpisode(n){
+  EP=EPISODES[n-1];SCENES=EP.scenes;TOTAL=SCENES.reduce((a,s)=>a+s.dur,0);
+  $('#epSub').textContent=EP.title;$('#synH').textContent='Episode '+EP.n+' in a nutshell';$('#syn').innerHTML=EP.syn;
+  [...epsEl.children].forEach((b,j)=>b.classList.toggle('on',j===n-1));
+  chipsEl.innerHTML='';SCENES.forEach((s,i)=>{const b=document.createElement('button');b.textContent=s.name;b.onclick=()=>{goScene(i);if(!playing)play()};chipsEl.appendChild(b)});
+  const nxt=EPISODES[n];$('#nextEpBtn').classList.toggle('hidden',!nxt);if(nxt)$('#nextEpBtn').textContent='▶ WATCH EPISODE '+nxt.n;
+  $('#endNote').textContent=nxt?'Up next: '+nxt.title.replace(/^Episode \d+: /,''):'See you in Episode '+(n+1)+'!';
+  $('#startBtn').textContent='▶ WATCH EPISODE '+n;
+}
+function goScene(i){
+  si=i;sc=SCENES[i];st=0;prevT=-1;clearParts();
+  id('world').removeAttribute('transform');bgL.innerHTML=BG[sc.bg]();uiL.innerHTML='';sc.init&&sc.init();
+  [...chipsEl.children].forEach((b,j)=>b.classList.toggle('on',j===i));
+  lastLine=null;VO.stop();$('#capWho').innerHTML='&nbsp;';$('#capTxt').textContent='';$('#endOv').classList.add('hidden');
+}
+let lastLine=null,TALKER=null;
+function caption(t){
+  let cur=null;for(const l of sc.lines)if(t>=l.t)cur=l;
+  const who=$('#capWho'),txt=$('#capTxt');
+  if(!cur){if(lastLine!==null){who.innerHTML='&nbsp;';txt.textContent='';lastLine=null}return null}
+  if(cur!==lastLine){lastLine=cur;if(playing)VO.say(cur);
+    if(cur.who==='nar'){who.textContent='Narrator';who.style.color='#7a6a58'}
+    else{const P=CAST[cur.who]||NPC[cur.who];who.textContent=P.name;who.style.color=P.color}}
+  const n=Math.floor((t-cur.t)*cur.text.length/Math.max(.6,cur.dur*.95));txt.textContent=cur.text.slice(0,n);
+  return (n<cur.text.length||(VO.busy&&VO.line===cur))?cur.who:null;
+}
+let last=performance.now();
+function frame(now){
+  const rdt=Math.min(.05,(now-last)/1000);last=now;
+  const dt=playing?rdt:0;
+  if(playing){let nt=st+dt;
+    if(VO.holding()){let nb=sc.dur;for(const l of sc.lines)if(l.t>st+1e-4&&l.t<nb)nb=l.t;if(nt>=nb)nt=Math.max(st,nb-.0005)}
+    st=nt;T+=dt;
+    if(st>=sc.dur){if(si<SCENES.length-1){goScene(si+1)}else{st=sc.dur;playing=false;$('#play').textContent='▶';$('#endOv').classList.remove('hidden')}}}
+  reset();id('world').removeAttribute('transform');
+  sc.update(st,dt);
+  const talker=caption(st);TALKER=talker;if(talker&&CH[talker])CH[talker].talk=true;
+  if(playing&&sc.events)sc.events.forEach(e=>{if(prevT<e.t&&st>=e.t)SFX[e.f]()});
+  prevT=st;
+  applyChars();stepParts(dt);
+  const cl=id('clouds');if(cl)cl.setAttribute('transform',`translate(${(Math.sin(T*.25)*18).toFixed(1)},0)`);
+  const fl=id('flames');if(fl)fl.setAttribute('transform',`translate(0,0) scale(${(1+Math.sin(T*13)*.06).toFixed(3)},${(1+Math.sin(T*9)*.1).toFixed(3)})`);
+  ['tf0','tf1'].forEach((k,i)=>{const e=id(k);if(e)e.setAttribute('transform',`scale(${(1+Math.sin(T*12+i)*.07).toFixed(3)},${(1+Math.sin(T*9+i*2)*.12).toFixed(3)})`)});
+  const wv=id('waves');if(wv)wv.setAttribute('transform',`translate(${(Math.sin(T*2)*10).toFixed(1)},0)`);
+  const mc=id('mcloud');if(mc)mc.setAttribute('transform',`translate(${(Math.sin(T*.4)*12).toFixed(1)},0)`);
+  const sun=id('sun');if(sun)sun.setAttribute('transform',`rotate(${(Math.sin(T*.8)*3).toFixed(2)},930,40)`);
+  const done=SCENES.slice(0,si).reduce((a,s)=>a+s.dur,0)+st;
+  $('#barFill').style.width=(done/TOTAL*100).toFixed(2)+'%';
+  requestAnimationFrame(frame);
+}
+function play(){
+  if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}
+  if(AC&&AC.state==='suspended')AC.resume().catch(()=>{});VO.loadAll();
+  VO.unlock();if(VO.wasLine){VO.say(VO.wasLine);VO.wasLine=null}
+  playing=true;$('#play').textContent='⏸';$('#startOv').classList.add('hidden');$('#endOv').classList.add('hidden');
+}
+function pause(){VO.wasLine=VO.busy?VO.line:null;VO.stop();playing=false;$('#play').textContent='▶'}
+$('#startBtn').onclick=()=>{goScene(0);play()};
+$('#againBtn').onclick=()=>{T=0;goScene(0);play()};
+$('#nextEpBtn').onclick=()=>{setEpisode(EP.n+1);goScene(0);play()};
+$('#play').onclick=()=>{if(playing)pause();else{if(si===SCENES.length-1&&st>=sc.dur)goScene(0);play()}};
+$('#restart').onclick=()=>{goScene(0);play()};
+$('#next').onclick=()=>{goScene(Math.min(SCENES.length-1,si+1));play()};
+$('#mute').onclick=()=>{muted=!muted;if(muted)VO.stop();$('#mute').textContent=muted?'🔇':'🔊'};
+$('#play').textContent='▶';
+setEpisode(4);goScene(0);st=7;   /* show the title pose behind the start button */
+requestAnimationFrame(frame);
+window.__dbg={goScene,setEpisode,setT:v=>{st=v}};
+})();
+</script>
+</body>
+</html>

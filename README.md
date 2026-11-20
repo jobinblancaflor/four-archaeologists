@@ -9,6 +9,7 @@ An animated cartoon series about four friends — **Johan** (the leader), **Thor
 2. The Door of Four Tools
 3. The Island of Whispers
 4. The Desert of Echoes
+5. The Frozen Peak (Finale)
 
 ## About
 - Characters are based on an original hand drawing.

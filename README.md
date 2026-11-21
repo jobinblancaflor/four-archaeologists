@@ -4,12 +4,15 @@ An animated cartoon series about four friends — **Johan** (the leader), **Thor
 
 **▶ Watch it here:** https://jobinblancaflor.github.io/four-archaeologists/
 
-## Episodes
+## Season 1
 1. The Secret of the Golden Medallion
 2. The Door of Four Tools
 3. The Island of Whispers
 4. The Desert of Echoes
-5. The Frozen Peak (Finale)
+5. The Frozen Peak (Season 1 Finale)
+
+## Season 2
+6. The Sunken City
 
 ## About
 - Characters are based on an original hand drawing.

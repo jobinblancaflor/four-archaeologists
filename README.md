@@ -13,6 +13,7 @@ An animated cartoon series about four friends — **Johan** (the leader), **Thor
 
 ## Season 2
 6. The Sunken City
+7. The Pearl of Tides
 
 ## About
 - Characters are based on an original hand drawing.

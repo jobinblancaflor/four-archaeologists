@@ -32,6 +32,12 @@ h1{font-family:'Luckiest Guy',cursive;color:#f2c94c;font-size:clamp(22px,5vw,38p
 .overlay button{font-family:'Luckiest Guy',cursive;font-size:clamp(22px,5vw,40px);background:#e4574b;color:#fff;border:4px solid var(--ink);border-radius:18px;padding:12px 28px;cursor:pointer;box-shadow:0 6px 0 var(--ink)}
 .overlay small{color:#fff;font-size:18px;text-shadow:1px 1px 0 #000}
 .hidden{display:none!important}
+#subtitle{position:absolute;left:50%;bottom:3.5%;transform:translateX(-50%);max-width:86%;background:rgba(20,16,12,.72);color:#fff;border-radius:14px;padding:10px 22px 12px;text-align:center;font-size:40px;line-height:1.25}
+#subWho{display:block;font-family:'Luckiest Guy',cursive;font-size:26px;letter-spacing:1px;filter:brightness(1.6)}
+body.rendering{background:#000}body.rendering .wrap{max-width:none;padding:0;margin:0}
+body.rendering h1,body.rendering .sub,body.rendering .eps,body.rendering .caption,body.rendering .controls,body.rendering .chips,body.rendering section.bible{display:none!important}
+body.rendering #endOv{display:none!important}
+body.rendering .stage{width:1920px;height:1080px;aspect-ratio:auto;border-radius:0;box-shadow:none}
 section.bible{background:var(--paper);border-radius:12px;margin-top:22px;padding:16px 18px;font-size:19px;line-height:1.4}
 section.bible h2{font-family:'Luckiest Guy',cursive;margin:0 0 8px;font-size:24px}
 .cast{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:10px}
@@ -61,6 +67,7 @@ section.bible h2{font-family:'Luckiest Guy',cursive;margin:0 0 8px;font-size:24p
       <g id="ui"></g></g>
       <g id="spiral"></g>
     </svg>
+    <div id="subtitle" class="hidden"><span id="subWho"></span><span id="subTxt"></span></div>
     <div class="overlay" id="startOv">
       <button id="startBtn">▶ WATCH</button>
       <small>With voice-over & sound effects — turn up the volume!</small>
@@ -1876,7 +1883,7 @@ function setEpisode(n){
   [...epsEl.children].forEach((b,j)=>b.classList.toggle('on',j===n-1));
   chipsEl.innerHTML='';SCENES.forEach((s,i)=>{const b=document.createElement('button');b.textContent=s.name;b.onclick=()=>{goScene(i);if(!playing)play()};chipsEl.appendChild(b)});
   const nxt=EPISODES[n];$('#nextEpBtn').classList.toggle('hidden',!nxt);if(nxt)$('#nextEpBtn').textContent='▶ WATCH EPISODE '+nxt.n;
-  $('#endNote').textContent=nxt?'Up next: '+nxt.title.replace(/^Episode \d+: /,''):'The End — thanks for watching!';
+  $('#endNote').textContent=nxt?'Up next: '+nxt.title.replace(/^Episode \d+: /,''):'More adventures coming soon!';
   $('#startBtn').textContent='▶ WATCH EPISODE '+n;
 }
 function goScene(i){
@@ -1897,8 +1904,13 @@ function caption(t){
   return (n<cur.text.length||(VO.busy&&VO.line===cur))?cur.who:null;
 }
 let last=performance.now();
+let RENDER=null;
 function frame(now){
-  const rdt=Math.min(.05,(now-last)/1000);last=now;
+  const rdt0=Math.min(.05,(now-last)/1000);last=now;
+  if(!RENDER)tick(rdt0);
+  requestAnimationFrame(frame);
+}
+function tick(rdt){
   const dt=playing?rdt:0;
   if(playing){let nt=st+dt;
     if(VO.holding()){let nb=sc.dur;for(const l of sc.lines)if(l.t>st+1e-4&&l.t<nb)nb=l.t;if(nt>=nb)nt=Math.max(st,nb-.0005)}
@@ -1918,7 +1930,6 @@ function frame(now){
   const sun=id('sun');if(sun)sun.setAttribute('transform',`rotate(${(Math.sin(T*.8)*3).toFixed(2)},930,40)`);
   const done=SCENES.slice(0,si).reduce((a,s)=>a+s.dur,0)+st;
   $('#barFill').style.width=(done/TOTAL*100).toFixed(2)+'%';
-  requestAnimationFrame(frame);
 }
 function play(){
   if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}
@@ -1938,6 +1949,24 @@ $('#play').textContent='▶';
 setEpisode(7);goScene(0);st=7;   /* show the title pose behind the start button */
 requestAnimationFrame(frame);
 window.__dbg={goScene,setEpisode,setT:v=>{st=v}};
+/* offline video-export mode (used only by the MP4 exporter, never in normal playback) */
+window.__render={
+  start(n){
+    RENDER={t:0,vo:[],sfx:[]};
+    VO.say=function(l){this.line=l;this.busy=true;this.end=RENDER.t+l.dur+(l.echo?1.6:0);RENDER.vo.push([RENDER.t,l.vo,l.echo?1:0])};
+    VO.holding=function(){if(this.busy&&RENDER.t>=this.end)this.busy=false;return this.busy};
+    VO.stop=function(){this.busy=false};
+    tone=function(f,d,type='square',vol=.08,slide=0,delay=0){RENDER.sfx.push([RENDER.t+delay,f,d,type,vol,slide])};
+    document.body.classList.add('rendering');
+    setEpisode(n);T=0;goScene(0);playing=true;
+    $('#startOv').classList.add('hidden');$('#endOv').classList.add('hidden');clearParts();
+  },
+  step(dt){RENDER.t+=dt;tick(dt);
+    const w=$('#capWho').textContent.trim(),x=$('#capTxt').textContent;const sb=$('#subtitle');
+    if(x){sb.classList.remove('hidden');$('#subWho').textContent=w;$('#subWho').style.color=$('#capWho').style.color;$('#subTxt').textContent=x}else sb.classList.add('hidden');
+    return !playing},
+  log(){return {vo:RENDER.vo,sfx:RENDER.sfx,t:RENDER.t}}
+};
 })();
 </script>
 </body>

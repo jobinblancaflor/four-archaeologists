@@ -14,6 +14,7 @@ An animated cartoon series about four friends — **Johan** (the leader), **Thor
 ## Season 2
 6. The Sunken City
 7. The Pearl of Tides
+8. The Crown of the Deep (Season 2 Finale)
 
 ## About
 - Characters are based on an original hand drawing.
